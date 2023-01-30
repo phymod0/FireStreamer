@@ -25,8 +25,11 @@ xsd_stubs: xsd_headers $(STUB_OUTPUT_DIR)/$(SCHEMA_NAME).h $(STUB_OUTPUT_DIR)
 	$(STUBGEN) $(STUBGEN_FLAGS) $(STUB_OUTPUT_DIR)/$(SCHEMA_NAME).h -d$(STUB_OUTPUT_DIR)/
 
 xsd_headers: $(SCHEMA_DIR)/$(SCHEMA_NAME).xsd
-	mkdir $(STUB_OUTPUT_DIR)/
+	mkdir -p $(STUB_OUTPUT_DIR)/
 	$(SCHEMA_2_H) $(SCHEMA_DIR)/$(SCHEMA_NAME).xsd -o $(STUB_OUTPUT_DIR)/$(SCHEMA_NAME).h
 
 clean:
 	rm -rf $(STUB_OUTPUT_DIR) $(APPNAME).cgi
+
+test: cgi
+	./$(APPNAME).cgi < ./test_data/ApplicationServer.getMovieInstanceMetadataById.req.xml
