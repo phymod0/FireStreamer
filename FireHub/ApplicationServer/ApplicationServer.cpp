@@ -16,7 +16,7 @@ int ns1__getMovieInstanceMetadataById(
         LONG64 movieInstanceId,
         struct ns1__getMovieInstanceMetadataByIdResponse &response)
 {
-    const string titleResponse = "Got movie with title: " + to_string(movieInstanceId);
+    const string titleResponse = "Got movie title: " + to_string(movieInstanceId);
     response.movieInstanceMetadata =
             soap_new_req_ns1__MovieInstanceMetadata(soap, movieInstanceId, titleResponse);
     return SOAP_OK;
