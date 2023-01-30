@@ -1,0 +1,30 @@
+{
+	"_type": "Project",
+	"_id": "AAAAAAFF+h6SjaM2Hec=",
+	"name": "FireStreamer",
+	"ownedElements": [
+		{
+			"_type": "UMLModel",
+			"_id": "AAAAAAFF+qBWK6M3Z8Y=",
+			"_parent": {
+				"$ref": "AAAAAAFF+h6SjaM2Hec="
+			},
+			"name": "FireHub",
+			"ownedElements": [
+				{
+					"_type": "UMLClassDiagram",
+					"_id": "AAAAAAFF+qBtyKM79qY=",
+					"_parent": {
+						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
+					},
+					"name": "ApplicationServer",
+					"documentation": "FireHub control plane that manages locally hosted content metadata and controls application streaming.",
+					"defaultDiagram": true
+				}
+			],
+			"documentation": "Central device hosting media and the application server. Typically hosted at home with direct, local connections to end devices."
+		}
+	],
+	"documentation": "Decentralized P2P media streaming application",
+	"author": "Awais Chishti"
+}

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions
+    name="ApplicationServer"
+    targetNamespace="urn:ApplicationServer"
+    xmlns:tns="urn:ApplicationServer"
+    xmlns:ns="urn:ApplicationServer"
+    xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:SOAP="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:HTTP="http://schemas.xmlsoap.org/wsdl/http/"
+    xmlns:MIME="http://schemas.xmlsoap.org/wsdl/mime/"
+    xmlns:DIME="http://schemas.xmlsoap.org/ws/2002/04/dime/wsdl/"
+    xmlns:WSDL="http://schemas.xmlsoap.org/wsdl/"
+    xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+    <types>
+        <schema name="ApplicationServer"
+            targetNamespace="urn:ApplicationServer"
+            xmlns:tns="urn:ApplicationServer"
+            xmlns:ns="urn:ApplicationServer"
+            xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+            xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="unqualified"
+            attributeFormDefault="unqualified">
+            <import namespace="http://schemas.xmlsoap.org/soap/encoding/" />
+
+            <!-- ID for general use among object types -->
+            <simpleType name="Id">
+                <restriction base="long">
+                    <minInclusive value="1" />
+                </restriction>
+            </simpleType>
+
+            <!-- Metadata for one downloadable instance of a movie -->
+            <complexType name="MovieInstanceMetadata">
+                <attribute name="id" type="tns:Id" use="required" />
+                <attribute name="title" type="string" use="required" />
+                <attribute name="magnetLink" type="string" />
+                <attribute name="coverImageLink" type="string" />
+            </complexType>
+        </schema>
+    </types>
+
+    <message name="getMovieInstanceMetadataByIdRequest">
+        <part name="movieInstanceId" type="tns:Id" />
+    </message>
+
+    <message name="getMovieInstanceMetadataByIdResponse">
+        <part name="movieInstanceMetadata" type="tns:MovieInstanceMetadata" />
+    </message>
+
+    <portType name="ApplicationServerPortType">
+        <operation name="getMovieInstanceMetadataById">
+            <documentation>
+                Get the metadata for a movie instance by ID
+            </documentation>
+            <input message="tns:getMovieInstanceMetadataByIdRequest" />
+            <output message="tns:getMovieInstanceMetadataByIdResponse" use="required" />
+        </operation>
+    </portType>
+
+    <binding name="ApplicationServer" type="tns:ApplicationServerPortType">
+        <SOAP:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http" />
+        <operation name="getMovieInstanceMetadataById">
+            <SOAP:operation style="rpc" soapAction="" />
+            <input>
+                <SOAP:body use="encoded" namespace="urn:ApplicationServer"
+                    encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </input>
+            <output>
+                <SOAP:body use="encoded" namespace="urn:ApplicationServer"
+                    encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </output>
+        </operation>
+    </binding>
+
+    <service name="ApplicationServer">
+        <documentation>
+            FireHub control plane that manages locally hosted content metadata and controls
+            application streaming.
+        </documentation>
+        <port name="ApplicationServer" binding="tns:ApplicationServer">
+            <SOAP:address location="urn:ApplicationServer" />
+        </port>
+    </service>
+
+</definitions>
