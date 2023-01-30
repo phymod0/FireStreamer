@@ -6,10 +6,8 @@
 // ${fileExtname} the current opened file's extension
 // ${cwd} the task runner's current working directory on startup
 {
-    "version": "0.1.0",
+    "version": "2.0.0",
     "command": "bash",
-    "isShellCommand": true,
-    "showOutput": "always",
     "options": {
         "cwd": "${workspaceRoot}/ApplicationServer"
     },
@@ -18,16 +16,32 @@
     ],
     "tasks": [
         {
-            "taskName": "build",
-            "suppressTaskName": true,
-            "isBuildCommand": true,
-            "args": ["make"]
+            "label": "build",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "-c",
+                "make"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "_id": "build",
+                "isDefault": false
+            }
         },
         {
-            "taskName": "test",
-            "suppressTaskName": true,
-            "isTestCommand": true,
-            "args": ["make test"]
+            "label": "test",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "-c",
+                "make test"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "_id": "test",
+                "isDefault": false
+            }
         }
     ]
 }

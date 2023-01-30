@@ -57,7 +57,7 @@
     <portType name="ApplicationServerPortType">
         <operation name="getMovieInstanceMetadataById">
             <documentation>
-                Get the metadata for a movie instance by ID
+                Get the metadata for a movie instance by ID.
             </documentation>
             <input message="tns:getMovieInstanceMetadataByIdRequest" />
             <output message="tns:getMovieInstanceMetadataByIdResponse" use="required" />
