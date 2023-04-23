@@ -1,0 +1,36 @@
+---
+# options: https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+BasedOnStyle: LLVM
+BreakBeforeBraces: Linux
+IndentWidth: 4
+AccessModifierOffset: -4
+# Must be 80 characters or less!
+ColumnLimit: 80
+# does (int) x instead of (int)x
+SpaceAfterCStyleCast: true
+# does string& str instead of string &str
+PointerAlignment: Left
+# spaces, not tabs!
+UseTab: Never
+# if (x) doStuff()  is not allowed, bad style
+AllowShortIfStatementsOnASingleLine: false
+# Allow void doSomething() { } but not void doSomething() { return; }
+AllowShortFunctionsOnASingleLine: Empty
+# Try not to place function names on new lines after their return types
+AlwaysBreakAfterDefinitionReturnType: None
+AlwaysBreakAfterReturnType: None
+PenaltyReturnTypeOnItsOwnLine: 999999999
+AlwaysBreakTemplateDeclarations: Yes
+# Disable clang's ugly argument/list value formatting
+BinPackArguments: false
+BinPackParameters: false
+AlignAfterOpenBracket: BlockIndent
+InsertTrailingCommas: Wrapped
+# allow trailing comments
+AlignTrailingComments: true
+SpacesBeforeTrailingComments: 3
+#  #define SHORT_NAME       42
+#  #define LONGER_NAME      0x007f   # does nice spacing for macros
+AlignConsecutiveMacros: Consecutive
+# use \n instead of \r\n
+UseCRLF: false
