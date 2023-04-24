@@ -4,9 +4,13 @@
 #include <iostream>
 #include <string>
 
+#include "LoggerHelper.h"
+
 #include <sqlite3.h>
 
 using namespace std;
+
+static const Logger LOG = LoggerHelper::getBootstrapLogger(__FILE__);
 
 int ns1__getMovieInstanceMetadataById(
     struct soap* soap,
@@ -14,10 +18,28 @@ int ns1__getMovieInstanceMetadataById(
     struct ns1__getMovieInstanceMetadataByIdResponse& response
 )
 {
+    LOG->debug(
+        "Received request for movie metadata instance with ID {}",
+        movieInstanceId
+    );
     const string titleResponse =
         "Got movie title: " + to_string(movieInstanceId);
-    response.movieInstanceMetadata = soap_new_req_ns1__MovieInstanceMetadata(
-        soap, movieInstanceId, titleResponse
+    response.movieInstanceMetadata =
+        soap_new_req_ns1__MovieInstanceMetadata(soap, titleResponse);
+    return SOAP_OK;
+}
+
+int ns1__createMovieInstanceMetadataById(
+    struct soap* soap,
+    struct ns1__MovieInstanceMetadata* movieInstanceMetadata,
+    struct ns1__createMovieInstanceMetadataByIdResponse& response
+)
+{
+    LOG->debug(
+        "Received request to create movie metadata instance ({}, {}, {})",
+        movieInstanceMetadata->title,
+        (void*) movieInstanceMetadata->magnetLink,
+        (void*) movieInstanceMetadata->coverImageLink
     );
     return SOAP_OK;
 }

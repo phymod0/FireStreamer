@@ -26,6 +26,9 @@ BinPackArguments: false
 BinPackParameters: false
 AlignAfterOpenBracket: BlockIndent
 InsertTrailingCommas: Wrapped
+ExperimentalAutoDetectBinPacking: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowAllArgumentsOnNextLine: false
 # allow trailing comments
 AlignTrailingComments: true
 SpacesBeforeTrailingComments: 3

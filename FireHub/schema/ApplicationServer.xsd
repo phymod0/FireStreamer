@@ -38,13 +38,22 @@
 
             <!-- Metadata for one downloadable instance of a movie -->
             <complexType name="MovieInstanceMetadata">
-                <attribute name="id" type="tns:Id" use="required" />
+                <!-- TODO(phymod0): Remove this line if not needed by any of the 5 (CLRUD) operations -->
+                <!-- attribute name="id" type="tns:Id" use="required" /-->
                 <attribute name="title" type="string" use="required" />
                 <attribute name="magnetLink" type="string" />
                 <attribute name="coverImageLink" type="string" />
             </complexType>
         </schema>
     </types>
+
+    <message name="createMovieInstanceMetadataByIdRequest">
+        <part name="movieInstanceMetadata" type="tns:MovieInstanceMetadata" />
+    </message>
+
+    <message name="createMovieInstanceMetadataByIdResponse">
+        <part name="movieInstanceId" type="tns:Id" />
+    </message>
 
     <message name="getMovieInstanceMetadataByIdRequest">
         <part name="movieInstanceId" type="tns:Id" />
@@ -55,17 +64,35 @@
     </message>
 
     <portType name="ApplicationServerPortType">
+        <operation name="createMovieInstanceMetadataById">
+            <documentation>
+                Create a movie metadata instance and return its ID.
+            </documentation>
+            <input message="tns:createMovieInstanceMetadataByIdRequest" use="required" />
+            <output message="tns:createMovieInstanceMetadataByIdResponse" use="required" />
+        </operation>
         <operation name="getMovieInstanceMetadataById">
             <documentation>
                 Get the metadata for a movie instance by ID.
             </documentation>
-            <input message="tns:getMovieInstanceMetadataByIdRequest" />
+            <input message="tns:getMovieInstanceMetadataByIdRequest" use="required" />
             <output message="tns:getMovieInstanceMetadataByIdResponse" use="required" />
         </operation>
     </portType>
 
     <binding name="ApplicationServer" type="tns:ApplicationServerPortType">
         <SOAP:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http" />
+        <operation name="createMovieInstanceMetadataById">
+            <SOAP:operation style="rpc" soapAction="" />
+            <input>
+                <SOAP:body use="encoded" namespace="urn:ApplicationServer"
+                    encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </input>
+            <output>
+                <SOAP:body use="encoded" namespace="urn:ApplicationServer"
+                    encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </output>
+        </operation>
         <operation name="getMovieInstanceMetadataById">
             <SOAP:operation style="rpc" soapAction="" />
             <input>
