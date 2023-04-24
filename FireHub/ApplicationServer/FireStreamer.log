@@ -1,2 +1,2 @@
-[2023-04-23 17:17:24.866] [Logger::ApplicationServer] [info] Validations successful!
-[2023-04-23 17:17:24.866] [Logger::ApplicationServer] [info] Tables initialized
+[2023-04-23 19:07:59.897] [Logger::ApplicationServer] [info] Tables initialized
+[2023-04-23 19:07:59.897] [Logger::ApplicationServer] [debug] Received request for movie metadata instance with ID lol123 1

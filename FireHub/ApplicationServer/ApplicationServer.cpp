@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 
+#include "ApplicationServer.h"
 #include "ApplicationServerConstants.h"
 #include "CommonConstants.h"
 #include "Configuration.h"
@@ -19,61 +20,54 @@ using namespace spdlog;
 
 static const Logger LOG = LoggerHelper::getBootstrapLogger(__FILE__);
 
-class SoapServer
+Logger SoapServer::getLogger() const
 {
-private:
-    const string& serverName;
+    return logger;
+}
 
-protected:
-    virtual void initialize() = 0;
-    virtual void validate() = 0;
+Database SoapServer::getDBHandle() const
+{
+    return dbHandle;
+}
 
-public:
-    void run()
-    {
-        soap_serve(soap_new());
-    }
+void SoapServer::run()
+{
+    struct soap* soap = soap_new();
+    soap->user = this;
+    soap_serve(soap);
+}
 
-    SoapServer(const string& serverName, const Configuration& configuration)
-        : serverName(serverName)
-    {
-    }
+SoapServer::SoapServer(
+    const string& serverName,
+    const Configuration& configuration
+)
+    : serverName(serverName),
+      logger(LoggerHelper::getLogger(serverName, configuration)),
+      dbHandle(configuration.getDatabasePath())
+{
+}
+
+const string ApplicationServer::SERVER_NAME = "ApplicationServer";
+
+const vector<string> ApplicationServer::tableDefinitions = {
+    Constants::TableDefinitions::MOVIE_INSTANCE_METADATA,
 };
 
-class ApplicationServer : public SoapServer
+void ApplicationServer::initialize()
 {
-    static inline const string SERVER_NAME = "ApplicationServer";
-    static inline const vector<string> tableDefinitions = {
-        Constants::TableDefinitions::MOVIE_INSTANCE_METADATA,
-    };
-    const Logger logger;
-    Database dbHandle;
-
-public:
-    void validate()
-    {
-        logger->info("Validations successful!");
+    for (const string& tableDefinition : tableDefinitions) {
+        const string createTableQuery =
+            "CREATE TABLE IF NOT EXISTS " + tableDefinition + ";";
+        dbHandle.exec(createTableQuery);
     }
+    logger->info("Tables initialized");
+}
 
-    void initialize()
-    {
-        for (const string& tableDefinition : tableDefinitions) {
-            const string createTableQuery =
-                "CREATE TABLE IF NOT EXISTS " + tableDefinition + ";";
-            dbHandle.exec(createTableQuery);
-        }
-        logger->info("Tables initialized");
-    }
-
-    ApplicationServer(const Configuration& configuration)
-        : SoapServer(SERVER_NAME, configuration),
-          logger(LoggerHelper::getLogger(SERVER_NAME, configuration)),
-          dbHandle(configuration.getDatabasePath())
-    {
-        validate();
-        initialize();
-    }
-};
+ApplicationServer::ApplicationServer(const Configuration& configuration)
+    : SoapServer(SERVER_NAME, configuration)
+{
+    initialize();
+}
 
 int main()
 {
