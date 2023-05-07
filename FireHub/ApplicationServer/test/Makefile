@@ -51,7 +51,7 @@ copy_cgi: $(APP_CGI)
 
 start_server:
 	rm -rf $(TEST_SERVER_SHUTDOWN_FILE)
-	$(TEST_SERVER) 1>/dev/null 2>/dev/null &
+	SPDLOG_LEVEL=debug $(TEST_SERVER) 1>/dev/null 2>/dev/null &
 
 stop_server:
 	touch $(TEST_SERVER_SHUTDOWN_FILE)

@@ -1,8 +1,7 @@
-#include <string.h>
 #include "ctest.h"
-#include "soapH.h"
 #include "defs.h"
-
+#include "soapH.h"
+#include <string.h>
 
 #if 0
 
@@ -73,17 +72,31 @@ static int call() {
 
 #endif
 
-
 TEST_DEFINE(test_soap_request, soap, test_ctx)
 {
     test_name(test_ctx, "Movie instance metadata creation success");
 
     int soap_err;
-    ns1__MovieInstanceMetadata* input = soap_new_req_ns1__MovieInstanceMetadata(soap, "Some movie");
+    ns1__MovieInstanceMetadata* input =
+        soap_new_req_ns1__MovieInstanceMetadata(soap, "Some movie");
     ns1__createMovieInstanceMetadataByIdResponse output;
-    soap_err = soap_call_ns1__createMovieInstanceMetadataById(soap, APPLICATION_SERVER_ENDPOINT, NULL, input, output);
-    test_check(test_ctx, "Movie instance metadata create operation returns success", SOAP_OK == soap_err);
-    test_check(test_ctx, "Returned movie instance ID must be equal to 786", 786 == output.movieInstanceId);
+    soap_err = soap_call_ns1__createMovieInstanceMetadataById(
+        soap,
+        APPLICATION_SERVER_ENDPOINT,
+        NULL,
+        input,
+        output
+    );
+    test_check(
+        test_ctx,
+        "Movie instance metadata create operation returns success",
+        SOAP_OK == soap_err
+    );
+    test_check(
+        test_ctx,
+        "Returned movie instance ID must be equal to 786",
+        786 == output.movieInstanceId
+    );
 #if 0
     if (soap_err != SOAP_OK) {
         soap_print_fault(soap, stderr);
@@ -91,10 +104,8 @@ TEST_DEFINE(test_soap_request, soap, test_ctx)
 #endif
 }
 
-
-TEST_START
-(
-	// test_add_ints,
-	// test_str_reverse,
-        test_soap_request,
+TEST_START(
+    // test_add_ints,
+    // test_str_reverse,
+    test_soap_request,
 )

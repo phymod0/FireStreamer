@@ -1,5 +1,5 @@
 #include "soap/ApplicationServer.nsmap"
-#include "soapH.h"
+#include "soap/soapH.h"
 
 int ns1__getMovieInstanceMetadataById(
     struct soap* soap,
@@ -7,9 +7,9 @@ int ns1__getMovieInstanceMetadataById(
     struct ns1__getMovieInstanceMetadataByIdResponse& response
 )
 {
-    (void)soap;
-    (void)movieInstanceId;
-    (void)response;
+    (void) soap;
+    (void) movieInstanceId;
+    (void) response;
     return SOAP_OK;
 }
 
@@ -19,8 +19,8 @@ int ns1__createMovieInstanceMetadataById(
     struct ns1__createMovieInstanceMetadataByIdResponse& response
 )
 {
-    (void)soap;
-    (void)movieInstanceMetadata;
-    (void)response;
+    (void) soap;
+    (void) movieInstanceMetadata;
+    (void) response;
     return SOAP_OK;
 }

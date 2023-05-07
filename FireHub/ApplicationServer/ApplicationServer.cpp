@@ -71,8 +71,6 @@ ApplicationServer::ApplicationServer(const Configuration& configuration)
 
 int main()
 {
-    // TODO(phymod0): Get from arguments otherwise
-    // decide defaults
     spdlog::cfg::load_env_levels();
     try {
         const Configuration configuration =
