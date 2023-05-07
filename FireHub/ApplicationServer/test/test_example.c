@@ -1,6 +1,10 @@
 #include <string.h>
 #include "ctest.h"
+#include "soapH.h"
+#include "defs.h"
 
+
+#if 0
 
 static int add_ints(int a, int b)
 {
@@ -47,9 +51,50 @@ TEST_DEFINE(test_str_reverse, res)
 	test_check(res, "Successfully reversed", equal);
 }
 
+static int call() {
+    // Create and initialize the soap instance
+    struct soap *soap = soap_new();
+    soap_init(soap);
+
+    // Prepare the input parameters
+    // (Replace these types and variables with your own)
+
+    // Call the web service operation
+
+    // Check the result for errors
+
+    // Clean up the soap instance
+    soap_destroy(soap);
+    soap_end(soap);
+    soap_free(soap);
+
+    return 0;
+}
+
+#endif
+
+
+TEST_DEFINE(test_soap_request, soap, test_ctx)
+{
+    test_name(test_ctx, "Movie instance metadata creation success");
+
+    int soap_err;
+    ns1__MovieInstanceMetadata* input = soap_new_req_ns1__MovieInstanceMetadata(soap, "Some movie");
+    ns1__createMovieInstanceMetadataByIdResponse output;
+    soap_err = soap_call_ns1__createMovieInstanceMetadataById(soap, APPLICATION_SERVER_ENDPOINT, NULL, input, output);
+    test_check(test_ctx, "Movie instance metadata create operation returns success", SOAP_OK == soap_err);
+    test_check(test_ctx, "Returned movie instance ID must be equal to 786", 786 == output.movieInstanceId);
+#if 0
+    if (soap_err != SOAP_OK) {
+        soap_print_fault(soap, stderr);
+    }
+#endif
+}
+
 
 TEST_START
 (
-	test_add_ints,
-	test_str_reverse,
+	// test_add_ints,
+	// test_str_reverse,
+        test_soap_request,
 )

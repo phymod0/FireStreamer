@@ -16,107 +16,117 @@
 
 
 typedef struct test_result {
-	const char* test_name;
-	unsigned long long passed, total;
-	const char* failed_checknames[MAX_CHECKNAMES_PER_UNIT];
-	unsigned long long n_failed_names;
+    const char* test_name;
+    unsigned long long passed, total;
+    const char* failed_checknames[MAX_CHECKNAMES_PER_UNIT];
+    unsigned long long n_failed_names;
 } test_result_t;
 
 
 static const char* status_str(bool condition)
 {
-	return condition ? GREEN "PASS" RESET : RED "FAIL" RESET;
+    return condition ? GREEN "PASS" RESET : RED "FAIL" RESET;
 }
 
 
 static void print_test_results(test_result_t* result)
 {
-	const char* status = status_str(result->passed == result->total);
-	const char* test_name = result->test_name;
-	if (!test_name)
-		test_name = "(unnamed)";
-	PSTDOUT("[%s] Test %s: %llu/%llu checks passed\n", status, test_name,
-		result->passed, result->total);
-	if (result->n_failed_names == 0)
-		return;
-	for (unsigned long long i=0; i<result->n_failed_names; ++i) {
-		PSTDOUT("\t[" RED "Failed #%llu" RESET "] ", i + 1);
-		PSTDOUT("%s\n", result->failed_checknames[i]);
-	}
+    const char* status = status_str(result->passed == result->total);
+    const char* test_name = result->test_name;
+    if (!test_name)
+        test_name = "(unnamed)";
+    PSTDOUT("[%s] Test %s: %llu/%llu checks passed\n", status, test_name,
+            result->passed, result->total);
+    if (result->n_failed_names == 0)
+        return;
+    for (unsigned long long i=0; i<result->n_failed_names; ++i) {
+        PSTDOUT("\t[" RED "Failed #%llu" RESET "] ", i + 1);
+        PSTDOUT("%s\n", result->failed_checknames[i]);
+    }
 }
 
 
 static bool run_single_test(test_t test)
 {
-	srand(time(NULL));
+    srand(time(NULL));
 
-	test_result_t result;
-	for (int i=0; i<N_RUNS_PER_TEST; ++i) {
-		result = (test_result_t){0};
-		test(&result);
-		if (result.passed != result.total)
-			break;
-	}
-	print_test_results(&result);
+    test_result_t result;
+    for (int i=0; i<N_RUNS_PER_TEST; ++i) {
+        // Allocate soap object
+        struct soap *soap = soap_new();
+        soap_init(soap);
+        // Execute test
+        result = {};
+        test(soap, &result);
+        // Free soap object
+        soap_destroy(soap);
+        soap_end(soap);
+        soap_free(soap);
+        // Loop check
+        if (result.passed != result.total) {
+            break;
+        }
+    }
+    print_test_results(&result);
 
-	return result.passed == result.total;
+    return result.passed == result.total;
 }
 
 
 static void print_bar(const char* color, const char* hdr)
 {
-	size_t hdr_len = strlen(hdr), n_dashes = PRINT_WIDTH - 4 - hdr_len;
-	for (size_t i=0; i<(n_dashes+1)/2; ++i)
-		PSTDOUT("-");
-	PSTDOUT("[ %s%s%s ]", color, hdr, RESET);
-	for (size_t i=0; i<n_dashes/2; ++i)
-		PSTDOUT("-");
-	PSTDOUT("\n");
+    size_t hdr_len = strlen(hdr), n_dashes = PRINT_WIDTH - 4 - hdr_len;
+    for (size_t i=0; i<(n_dashes+1)/2; ++i)
+        PSTDOUT("-");
+    PSTDOUT("[ %s%s%s ]", color, hdr, RESET);
+    for (size_t i=0; i<n_dashes/2; ++i)
+        PSTDOUT("-");
+    PSTDOUT("\n");
 }
 
 
 void test_acheck(test_result_t* result, bool check)
 {
-	++result->total;
-	if (check)
-		++result->passed;
+    ++result->total;
+    if (check)
+        ++result->passed;
 }
 
 
 void test_check(test_result_t* result, const char* name, bool check)
 {
-	++result->total;
-	if (check) {
-		++result->passed;
-		return;
-	}
-	if (result->n_failed_names < MAX_CHECKNAMES_PER_UNIT)
-		result->failed_checknames[result->n_failed_names++] = name;
-	else
-		PSTDERR("Cannot record check failure name (buffer full).\n");
+    ++result->total;
+    if (check) {
+        ++result->passed;
+        return;
+    }
+    if (result->n_failed_names < MAX_CHECKNAMES_PER_UNIT)
+        result->failed_checknames[result->n_failed_names++] = name;
+    else
+        PSTDERR("Cannot record check failure name (buffer full).\n");
 }
 
 
 void test_name(test_result_t* result, const char* name)
 {
-	result->test_name = name;
+    result->test_name = name;
 }
 
 
 int test_run(const test_t* tests, size_t n_tests, const char* module_name)
 {
-	size_t n_passed = 0;
-	PSTDOUT("\n");
-	print_bar(RESET, module_name);
-	for (size_t i=0; i<n_tests; ++i)
-		if (run_single_test(tests[i]))
-			++n_passed;
-	bool passed = n_passed == n_tests;
-	char result[PRINT_WIDTH - 4];
-	snprintf(result, sizeof result, "Passed %lu/%lu", n_passed, n_tests);
-	print_bar(passed ? GREEN : RED, result);
-	PSTDOUT("\n");
-	return (int)(n_tests - n_passed);
+    size_t n_passed = 0;
+    PSTDOUT("\n");
+    print_bar(RESET, module_name);
+    for (size_t i=0; i<n_tests; ++i)
+        if (run_single_test(tests[i]))
+            ++n_passed;
+    bool passed = n_passed == n_tests;
+    char result[PRINT_WIDTH - 4];
+    snprintf(result, sizeof result, "Passed %lu/%lu", n_passed, n_tests);
+    print_bar(passed ? GREEN : RED, result);
+    PSTDOUT("\n");
+    return (int)(n_tests - n_passed);
 }
 
 

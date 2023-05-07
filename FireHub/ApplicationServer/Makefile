@@ -1,13 +1,13 @@
-# Global config
-APPNAME=$(SCHEMA_NAME)
-
 # Stub generator configuration
 SCHEMA_2_H=wsdl2h
 STUBGEN=soapcpp2
-STUBGEN_FLAGS=-c++11 -L -S -s -v -w -x
+STUBGEN_FLAGS=-c++11 -L -s -v -x -S
 SCHEMA_DIR=../schema
 SCHEMA_NAME=ApplicationServer
 STUB_OUTPUT_DIR=./soap
+
+# Global config
+APPNAME=$(SCHEMA_NAME)
 
 # Other config settings
 LOG_FILEPATH=./FireStreamer.log
@@ -39,4 +39,4 @@ clean:
 	rm -rf $(STUB_OUTPUT_DIR) $(APPNAME).cgi $(LOG_FILEPATH)
 
 test: remake_cgi
-	SPDLOG_LEVEL=debug ./$(APPNAME).cgi < ./test_data/ApplicationServer.getMovieInstanceMetadataById.req.xml
+	$(MAKE) -C test test

@@ -49,5 +49,6 @@ int ns1__createMovieInstanceMetadataById(
         (void*) movieInstanceMetadata->magnetLink,
         (void*) movieInstanceMetadata->coverImageLink
     );
+    response.movieInstanceId = 786;
     return SOAP_OK;
 }
