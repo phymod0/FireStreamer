@@ -12,7 +12,7 @@ using std::string;
 
 static const Logger LOG = LoggerHelper::getBootstrapLogger(__FILE__);
 
-static inline void logAndThrow(const string& errorMessage)
+static void logAndThrow(const string& errorMessage)
 {
     LOG->error(errorMessage);
     throw runtime_error(errorMessage);

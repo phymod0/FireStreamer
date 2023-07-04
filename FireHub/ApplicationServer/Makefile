@@ -15,7 +15,7 @@ COMMONS_DIR=../common
 
 # Compiler configuration
 CXX=g++
-CXX_OPTS=-g
+CXX_OPTS=-O3 -Wall -Werror -Wextra -Wno-c++17-extensions -std=c++17 -finline-functions
 CXX_INCLUDE_DIRS=-I./ -I$(COMMONS_DIR) -I./soap/
 CXX_FLAGS=$(CXX_OPTS) $(CXX_INCLUDE_DIRS)
 CXX_LIBS=-lgsoap++ -ljsoncpp -lfmt -lsqlite3

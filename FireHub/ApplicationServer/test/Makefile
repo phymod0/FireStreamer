@@ -13,8 +13,7 @@ SOAP_STUB_OUTPUT_DIR=$(SOAP_DIR)
 
 # Compiler configuration
 CXX=g++
-CXX_OPTS=-g -Wall -Werror -Wextra -std=gnu++11 -fsanitize=address \
-		-fsanitize=undefined -Winline # -O3 -finline-functions -Winline
+CXX_OPTS=-g -Wall -Werror -Wextra -Wno-c++17-extensions -std=c++17 -fsanitize=address -fsanitize=undefined
 CXX_INCLUDES=$(SOAP_STUB_OUTPUT_DIR) .. ../../common
 CXX_INCLUDE_DIRS=$(patsubst %,-I%,$(CXX_INCLUDES))
 CXX_LIBS=-lgsoap++ -lfmt

@@ -50,6 +50,7 @@ int ns1__createMovieInstanceMetadataById(
     try {
         dbHandle.begin();
         sqlite3* db = dbHandle.get();
+        (void) db;
         // TODO(phymod0): Add logic to insert movie instance metadata
         // TODO(phymod0): Introduce DAO library here?
         response.movieInstanceId = 786;
