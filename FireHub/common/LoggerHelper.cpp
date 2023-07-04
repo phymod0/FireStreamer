@@ -11,8 +11,9 @@
 
 using std::string;
 
-Logger LoggerHelper::getLogger(const string& name,
-                               const Configuration& configuration)
+Logger LoggerHelper::getLogger(
+    const string& name,
+    const Configuration& configuration)
 {
     const string loggerName = LOGGER_PREFIX + name;
     const Logger existingLogger = spdlog::get(loggerName);

@@ -20,8 +20,7 @@ public:
     void run();
     SoapServer(
         const std::string& serverName,
-        const Configuration& configuration
-    );
+        const Configuration& configuration);
 };
 
 class ApplicationServer : public SoapServer

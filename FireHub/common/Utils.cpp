@@ -29,12 +29,14 @@ string vectorToString(const vector<T> vec)
 
 string getJsonString(const Json::Value& root, const vector<string>& path)
 {
-    LOG->trace("Returning value in {} at path {}", root.toStyledString(),
-               vectorToString(path));
+    LOG->trace(
+        "Returning value in {} at path {}",
+        root.toStyledString(),
+        vectorToString(path));
     if (path.empty()) {
         if (root.type() != Json::stringValue) {
-            throw runtime_error("Expected string at termination but was type " +
-                                root.type());
+            throw runtime_error(
+                "Expected string at termination but was type " + root.type());
         }
         return root.asString();
     }
@@ -49,8 +51,9 @@ string getJsonString(const Json::Value& root, const vector<string>& path)
         throw "Unable to find \"" + node +
             "\" in members of JSON structure: " + root.toStyledString();
     }
-    return getJsonString(root[node],
-                         vector<string>(path.begin() + 1, path.end()));
+    return getJsonString(
+        root[node],
+        vector<string>(path.begin() + 1, path.end()));
 }
 
 }   // namespace Utils

@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include <string>
 
+#include "CommonConstants.h"
 #include "Database.h"
 #include "LoggerHelper.h"
 
@@ -22,14 +23,48 @@ sqlite3* Database::get()
     return db;
 }
 
+void Database::begin()
+{
+    char* errMsg;
+    const int rc = sqlite3_exec(
+        db,
+        Constants::DatabaseCommands::BEGIN_TRANSACTION,
+        NULL,
+        NULL,
+        &errMsg);
+    if (rc != SQLITE_OK) {
+        const string error =
+            "BEGIN transaction failed due to error: " + string(errMsg);
+        sqlite3_free(errMsg);
+        logAndThrow(error);
+    }
+}
+
 void Database::exec(const string& sqlStr)
 {
-    char* errorMsg;
-    int rc = sqlite3_exec(db, sqlStr.c_str(), nullptr, nullptr, &errorMsg);
+    char* errMsg;
+    const int rc = sqlite3_exec(db, sqlStr.c_str(), nullptr, nullptr, &errMsg);
     if (rc != SQLITE_OK) {
         const string error = "Failed to execute statement [" + sqlStr +
-                             "] due to error: " + errorMsg;
-        sqlite3_free(errorMsg);
+                             "] due to error: " + string(errMsg);
+        sqlite3_free(errMsg);
+        logAndThrow(error);
+    }
+}
+
+void Database::end()
+{
+    char* errMsg;
+    const int rc = sqlite3_exec(
+        db,
+        Constants::DatabaseCommands::END_TRANSACTION,
+        NULL,
+        NULL,
+        &errMsg);
+    if (rc != SQLITE_OK) {
+        const string error =
+            "END transaction failed due to error: " + string(errMsg);
+        sqlite3_free(errMsg);
         logAndThrow(error);
     }
 }
@@ -37,7 +72,7 @@ void Database::exec(const string& sqlStr)
 Database::Database(const string& dbPath)
 {
     sqlite3* db;
-    int rc = sqlite3_open(dbPath.c_str(), &db);
+    const int rc = sqlite3_open(dbPath.c_str(), &db);
     if (rc != SQLITE_OK) {
         const string error = "Failed to open database at path " + dbPath +
                              " due to error: " + sqlite3_errmsg(db);

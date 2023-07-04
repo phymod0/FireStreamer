@@ -78,25 +78,22 @@ TEST_DEFINE(test_soap_request, soap, test_ctx)
 
     int soap_err;
     ns1__MovieInstanceMetadata* input =
-        soap_new_req_ns1__MovieInstanceMetadata(soap, "Some movie");
+        soap_new_req_ns1__MovieInstanceMetadata(soap, "Fuck you");
     ns1__createMovieInstanceMetadataByIdResponse output;
     soap_err = soap_call_ns1__createMovieInstanceMetadataById(
         soap,
         APPLICATION_SERVER_ENDPOINT,
         NULL,
         input,
-        output
-    );
+        output);
     test_check(
         test_ctx,
         "Movie instance metadata create operation returns success",
-        SOAP_OK == soap_err
-    );
+        SOAP_OK == soap_err);
     test_check(
         test_ctx,
         "Returned movie instance ID must be equal to 786",
-        786 == output.movieInstanceId
-    );
+        786 == output.movieInstanceId);
 #if 0
     if (soap_err != SOAP_OK) {
         soap_print_fault(soap, stderr);
@@ -107,5 +104,4 @@ TEST_DEFINE(test_soap_request, soap, test_ctx)
 TEST_START(
     // test_add_ints,
     // test_str_reverse,
-    test_soap_request,
-)
+    test_soap_request, )

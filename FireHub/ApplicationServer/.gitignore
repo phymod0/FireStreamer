@@ -1,3 +1,4 @@
 soap/
 ApplicationServer.cgi
 FireStreamer.log
+.cache/

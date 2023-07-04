@@ -24,7 +24,7 @@ AlwaysBreakTemplateDeclarations: Yes
 # Disable clang's ugly argument/list value formatting
 BinPackArguments: false
 BinPackParameters: false
-AlignAfterOpenBracket: BlockIndent
+AlignAfterOpenBracket: AlwaysBreak
 InsertTrailingCommas: Wrapped
 ExperimentalAutoDetectBinPacking: false
 AllowAllParametersOfDeclarationOnNextLine: false

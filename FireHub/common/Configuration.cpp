@@ -29,8 +29,9 @@ Configuration Configuration::loadFromFile(const string& fileName)
 
 string Configuration::getLogFolder() const
 {
-    const string logFolder = Utils::getJsonString(this->configurationJson,
-                                                  {"logging", "logFolderPath"});
+    const string logFolder = Utils::getJsonString(
+        this->configurationJson,
+        {"logging", "logFolderPath"});
     LOG->debug("Got log folder from JSON config: {}", logFolder);
     return logFolder;
 }

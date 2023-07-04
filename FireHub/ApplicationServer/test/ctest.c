@@ -36,8 +36,7 @@ static void print_test_results(test_result_t* result)
         status,
         test_name,
         result->passed,
-        result->total
-    );
+        result->total);
     if (result->n_failed_names == 0)
         return;
     for (unsigned long long i = 0; i < result->n_failed_names; ++i) {

@@ -9,8 +9,9 @@
 namespace Utils
 {
 
-std::string getJsonString(const Json::Value& root,
-                          const std::vector<std::string>& path);
+std::string getJsonString(
+    const Json::Value& root,
+    const std::vector<std::string>& path);
 
 }
 
