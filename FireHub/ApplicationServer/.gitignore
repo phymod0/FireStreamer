@@ -2,3 +2,5 @@ soap/
 ApplicationServer.cgi
 FireStreamer.log
 .cache/
+*.swp
+Session.vim
