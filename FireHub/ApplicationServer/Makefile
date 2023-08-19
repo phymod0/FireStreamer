@@ -12,16 +12,17 @@ APPNAME=$(SCHEMA_NAME)
 # Other config settings
 LOG_FILEPATH=./FireStreamer.log
 COMMONS_DIR=../common
+DAO_DIR=../dao
 
 # Compiler configuration
 CXX=g++
 CXX_OPTS=-O3 -Wall -Werror -Wextra -Wno-c++17-extensions -std=c++17 -finline-functions
-CXX_INCLUDE_DIRS=-I./ -I$(COMMONS_DIR) -I./soap/
+CXX_INCLUDE_DIRS=-I./ -I$(COMMONS_DIR) -I$(DAO_DIR) -I./soap/
 CXX_FLAGS=$(CXX_OPTS) $(CXX_INCLUDE_DIRS)
 CXX_LIBS=-lgsoap++ -ljsoncpp -lfmt -lsqlite3
 
 # C/CPP files to compile
-CXX_FILES=*.cpp $(COMMONS_DIR)/*.cpp $(STUB_OUTPUT_DIR)/*.cpp
+CXX_FILES=*.cpp $(COMMONS_DIR)/*.cpp $(DAO_DIR)/*.cpp $(STUB_OUTPUT_DIR)/*.cpp
 
 remake_cgi: clean cgi
 
