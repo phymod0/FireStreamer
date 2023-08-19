@@ -3,4 +3,7 @@ ApplicationServer.cgi
 FireStreamer.log
 .cache/
 *.swp
+*.swo
+../dao/*.swo
+../dao/*.swp
 Session.vim
