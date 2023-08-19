@@ -1,0 +1,140 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-g",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-Wno-c++17-extensions",
+      "-std=c++17",
+      "-fsanitize=address",
+      "-fsanitize=undefined",
+      "-I./soap",
+      "-I..",
+      "-I../../common",
+      "-o",
+      "test_example",
+      "./soap/soapC.cpp"
+    ],
+    "directory": "/home/phymod0/dev/FireStreamer/FireHub/ApplicationServer/test",
+    "file": "/home/phymod0/dev/FireStreamer/FireHub/ApplicationServer/test/soap/soapC.cpp",
+    "output": "/home/phymod0/dev/FireStreamer/FireHub/ApplicationServer/test/test_example"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-g",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-Wno-c++17-extensions",
+      "-std=c++17",
+      "-fsanitize=address",
+      "-fsanitize=undefined",
+      "-I./soap",
+      "-I..",
+      "-I../../common",
+      "-o",
+      "test_example",
+      "./soap/soapClient.cpp"
+    ],
+    "directory": "/home/phymod0/dev/FireStreamer/FireHub/ApplicationServer/test",
+    "file": "/home/phymod0/dev/FireStreamer/FireHub/ApplicationServer/test/soap/soapClient.cpp",
+    "output": "/home/phymod0/dev/FireStreamer/FireHub/ApplicationServer/test/test_example"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-g",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-Wno-c++17-extensions",
+      "-std=c++17",
+      "-fsanitize=address",
+      "-fsanitize=undefined",
+      "-I./soap",
+      "-I..",
+      "-I../../common",
+      "-o",
+      "test_example",
+      "./soap/soapServer.cpp"
+    ],
+    "directory": "/home/phymod0/dev/FireStreamer/FireHub/ApplicationServer/test",
+    "file": "/home/phymod0/dev/FireStreamer/FireHub/ApplicationServer/test/soap/soapServer.cpp",
+    "output": "/home/phymod0/dev/FireStreamer/FireHub/ApplicationServer/test/test_example"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-g",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-Wno-c++17-extensions",
+      "-std=c++17",
+      "-fsanitize=address",
+      "-fsanitize=undefined",
+      "-I./soap",
+      "-I..",
+      "-I../../common",
+      "-o",
+      "test_example",
+      "ctest.c"
+    ],
+    "directory": "/home/phymod0/dev/FireStreamer/FireHub/ApplicationServer/test",
+    "file": "/home/phymod0/dev/FireStreamer/FireHub/ApplicationServer/test/ctest.c",
+    "output": "/home/phymod0/dev/FireStreamer/FireHub/ApplicationServer/test/test_example"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-g",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-Wno-c++17-extensions",
+      "-std=c++17",
+      "-fsanitize=address",
+      "-fsanitize=undefined",
+      "-I./soap",
+      "-I..",
+      "-I../../common",
+      "-o",
+      "test_example",
+      "server_stubs.c"
+    ],
+    "directory": "/home/phymod0/dev/FireStreamer/FireHub/ApplicationServer/test",
+    "file": "/home/phymod0/dev/FireStreamer/FireHub/ApplicationServer/test/server_stubs.c",
+    "output": "/home/phymod0/dev/FireStreamer/FireHub/ApplicationServer/test/test_example"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-g",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-Wno-c++17-extensions",
+      "-std=c++17",
+      "-fsanitize=address",
+      "-fsanitize=undefined",
+      "-I./soap",
+      "-I..",
+      "-I../../common",
+      "-o",
+      "test_example",
+      "test_example.c"
+    ],
+    "directory": "/home/phymod0/dev/FireStreamer/FireHub/ApplicationServer/test",
+    "file": "/home/phymod0/dev/FireStreamer/FireHub/ApplicationServer/test/test_example.c",
+    "output": "/home/phymod0/dev/FireStreamer/FireHub/ApplicationServer/test/test_example"
+  }
+]
