@@ -5,6 +5,7 @@
 #include "Database.h"
 #include "LoggerHelper.h"
 
+// TODO(phymod0): Rebrand as an application helper with server functionality
 class SoapServer
 {
 private:
