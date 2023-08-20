@@ -42,7 +42,7 @@ SoapServer::SoapServer(
     const Configuration& configuration)
     : serverName(serverName),
       logger(LoggerHelper::getLogger(serverName, configuration)),
-      dbHandle(configuration.getDatabasePath())
+      dbHandle(configuration.getDatabasePath(), logger)
 {
 }
 

@@ -1,38 +1,69 @@
-#include <stdexcept>
-#include <string>
-
-#include "CommonConstants.h"
 #include "Database.h"
+#include "CommonConstants.h"
 #include "LoggerHelper.h"
 
 #include <sqlite3.h>
 
+#include <cstdint>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+
 using std::runtime_error;
 using std::string;
+using std::stringstream;
 
-static const Logger LOG = LoggerHelper::getBootstrapLogger(__FILE__);
-
-static void logAndThrow(const string& errorMessage)
+static void __logAndThrow(const string& errorMessage, const Logger& log)
 {
-    LOG->error(errorMessage);
+    log->error(errorMessage);
     throw runtime_error(errorMessage);
 }
 
-static void doExecWithoutParams(sqlite3* db, const string& sqlStr)
+static void __doExecWithoutParams(
+    const string& sqlStr,
+    sqlite3* db,
+    const Logger& log)
 {
     char* errMsg;
+    log->debug("Executing statement: " + sqlStr);
     const int rc = sqlite3_exec(db, sqlStr.c_str(), nullptr, nullptr, &errMsg);
     if (rc != SQLITE_OK) {
         const string error = "Failed to execute statement [" + sqlStr +
                              "] due to error: " + string(errMsg);
         sqlite3_free(errMsg);
-        logAndThrow(error);
+        __logAndThrow(error, log);
     }
 }
 
-Database::Database(const string& dbPath)
+static uint64_t getLastInsertedID(sqlite3* db)
+{
+    return sqlite3_last_insert_rowid(db);
+}
+
+void Database::logAndThrow(const string& errorMessage)
+{
+    __logAndThrow(errorMessage, log);
+}
+
+void Database::doExecWithoutParams(const string& sqlStr)
+{
+    __doExecWithoutParams(sqlStr, db, log);
+}
+
+void Transaction::logAndThrow(const string& errorMessage)
+{
+    __logAndThrow(errorMessage, log);
+}
+
+void Transaction::doExecWithoutParams(const string& sqlStr)
+{
+    __doExecWithoutParams(sqlStr, db, log);
+}
+
+Database::Database(const string& dbPath, const Logger& logger) : log(logger)
 {
     sqlite3* db;
+    log->debug("Opening database at path {}...", dbPath);
     const int rc = sqlite3_open(dbPath.c_str(), &db);
     if (rc != SQLITE_OK) {
         const string error = "Failed to open database at path " + dbPath +
@@ -41,30 +72,33 @@ Database::Database(const string& dbPath)
         logAndThrow(error);
     }
     this->db = db;
-    LOG->debug("Opened database at path {}", dbPath);
+    log->debug("Opened database at path {}", dbPath);
 }
 
 void Database::exec(const string& sqlStr)
 {
-    doExecWithoutParams(db, sqlStr);
+    doExecWithoutParams(sqlStr);
 }
 
 Transaction Database::newTransaction()
 {
-    return Transaction(db);
+    return Transaction(db, log);
 }
 
 Database::~Database()
 {
+    log->debug("Closing database...");
     int rc = sqlite3_close(db);
     if (rc != SQLITE_OK) {
-        LOG->warn("Failed to close database: {}", sqlite3_errmsg(db));
+        log->warn("Failed to close database: {}", sqlite3_errmsg(db));
     }
 }
 
-Transaction::Transaction(sqlite3* db) : db(db)
+Transaction::Transaction(sqlite3* db, const Logger& logger)
+    : db(db), log(logger)
 {
     char* errMsg;
+    log->debug("Starting BEGIN transaction");
     const int rc = sqlite3_exec(
         db,
         Constants::DatabaseCommands::BEGIN_TRANSACTION,
