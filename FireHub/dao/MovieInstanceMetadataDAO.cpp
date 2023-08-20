@@ -4,8 +4,21 @@
 #include "LoggerHelper.h"
 
 #include <cstdint>
+#include <sstream>
+#include <string>
 
 using std::string;
+using std::stringstream;
+
+static string toSQLFieldValue(const string& str)
+{
+    return "'" + str + "'";
+}
+
+static string toSQLFieldValue(const string* str)
+{
+    return str == nullptr ? "NULL" : toSQLFieldValue(*str);
+}
 
 MovieInstanceMetadataDAO::MovieInstanceMetadataDAO(
     Database& dbHandle,
@@ -19,12 +32,12 @@ int64_t MovieInstanceMetadataDAO::create(
     const string* magnetLink,
     const string* coverImageLink)
 {
-    (void) title;
-    (void) magnetLink;
-    (void) coverImageLink;
     Transaction transaction = dbHandle.newTransaction();
-    sqlite3* db = transaction.getDbPtr();
-    // TODO(phymod0): Add logic to insert movie instance metadata
-    (void) db;
-    return 786;
+    stringstream statement;
+    statement << "INSERT INTO MOVIE_INSTANCE_METADATA(TITLE, "
+                 "MAGNET_LINK, COVER_IMAGE_LINK) VALUES ("
+              << toSQLFieldValue(title) << ", " << toSQLFieldValue(magnetLink)
+              << ", " << toSQLFieldValue(coverImageLink) << ");";
+    transaction.exec(statement);
+    return transaction.getInsertedID();
 }

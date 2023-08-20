@@ -18,11 +18,8 @@ class MovieInstanceMetadataDAO
 
 public:
     // TODO(phymod0): Make SoapServer a factory for DAO instances instead
-    MovieInstanceMetadataDAO(Database& dbHandle, const Logger& log);
-    int64_t create(
-        const string& title,
-        const string* magnetLink,
-        const string* coverImageLink);
+    MovieInstanceMetadataDAO(Database&, const Logger&);
+    int64_t create(const string&, const string*, const string*);
 };
 
 #endif /* MOVIE_INSTANCE_METADATA_DAO */

@@ -120,12 +120,23 @@ sqlite3* Transaction::getDbPtr()
 
 void Transaction::exec(const string& sqlStr)
 {
-    doExecWithoutParams(db, sqlStr);
+    doExecWithoutParams(sqlStr);
+}
+
+void Transaction::exec(const stringstream& sqlStrStream)
+{
+    exec(sqlStrStream.str());
+}
+
+uint64_t Transaction::getInsertedID()
+{
+    return getLastInsertedID(db);
 }
 
 Transaction::~Transaction()
 {
     char* errMsg;
+    log->debug("Starting END transaction");
     const int rc = sqlite3_exec(
         db,
         Constants::DatabaseCommands::END_TRANSACTION,
