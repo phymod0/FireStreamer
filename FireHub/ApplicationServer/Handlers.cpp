@@ -7,6 +7,7 @@
 #include "ApplicationServer.h"
 #include "CommonConstants.h"
 #include "LoggerHelper.h"
+#include "MovieInstanceMetadataDAO.h"
 
 #include <sqlite3.h>
 
@@ -23,7 +24,9 @@ int ns1__getMovieInstanceMetadataById(
     struct ns1__getMovieInstanceMetadataByIdResponse& response)
 {
     const ApplicationServer* app = getApplication(soap);
+    Database dbHandle = app->getDBHandle();
     const Logger log = app->getLogger();
+    MovieInstanceMetadataDAO metadataDao(dbHandle, log);
     log->debug(
         "Received request for movie metadata instance with ID {}",
         movieInstanceId);
@@ -40,21 +43,21 @@ int ns1__createMovieInstanceMetadataById(
     struct ns1__createMovieInstanceMetadataByIdResponse& response)
 {
     const ApplicationServer* app = getApplication(soap);
-    const Logger log = app->getLogger();
     Database dbHandle = app->getDBHandle();
+    const Logger log = app->getLogger();
+    MovieInstanceMetadataDAO metadataDao(dbHandle, log);
+
+    const string& title = movieInstanceMetadata->title;
+    const string* magnetLink = movieInstanceMetadata->magnetLink;
+    const string* coverImageLink = movieInstanceMetadata->coverImageLink;
     log->debug(
-        "Received request to create movie metadata instance ({}, {}, {})",
-        movieInstanceMetadata->title,
-        (void*) movieInstanceMetadata->magnetLink,
-        (void*) movieInstanceMetadata->coverImageLink);
+        "Received request to create movie metadata instance ({})",
+        title);
+    // Create instance metadata
     try {
-        dbHandle.begin();
-        sqlite3* db = dbHandle.get();
-        (void) db;
-        // TODO(phymod0): Add logic to insert movie instance metadata
-        // TODO(phymod0): Introduce DAO library here?
-        response.movieInstanceId = 786;
-        dbHandle.end();
+        const LONG64 createdInstanceId =
+            metadataDao.create(title, magnetLink, coverImageLink);
+        response.movieInstanceId = createdInstanceId;
     } catch (const string& error) {
         log->error("Request failed due to error: {}", error);
         return SOAP_SVR_FAULT;
