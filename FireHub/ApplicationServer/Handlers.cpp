@@ -59,6 +59,9 @@ int ns1__createMovieInstanceMetadataById(
         const LONG64 createdInstanceId =
             metadataDao.create(title, magnetLink, coverImageLink);
         response.movieInstanceId = createdInstanceId;
+        log->info(
+            "Create movie instance metadata with ID: {}",
+            response.movieInstanceId);
     } catch (const string& error) {
         log->error("Request failed due to error: {}", error);
         return SOAP_SVR_FAULT;

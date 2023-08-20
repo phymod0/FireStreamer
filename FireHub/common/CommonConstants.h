@@ -10,6 +10,8 @@ inline const std::string CONFIG_PATH =
 
 namespace TableDefinitions
 {
+// TODO(phymod0): Delegate table creation to DAO setup and remove DAO-specific
+// constants from here
 inline const char* MOVIE_INSTANCE_METADATA =
     "MOVIE_INSTANCE_METADATA"
     "("
