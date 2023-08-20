@@ -18,52 +18,13 @@ static void logAndThrow(const string& errorMessage)
     throw runtime_error(errorMessage);
 }
 
-sqlite3* Database::get()
-{
-    return db;
-}
-
-void Database::begin()
-{
-    char* errMsg;
-    const int rc = sqlite3_exec(
-        db,
-        Constants::DatabaseCommands::BEGIN_TRANSACTION,
-        NULL,
-        NULL,
-        &errMsg);
-    if (rc != SQLITE_OK) {
-        const string error =
-            "BEGIN transaction failed due to error: " + string(errMsg);
-        sqlite3_free(errMsg);
-        logAndThrow(error);
-    }
-}
-
-void Database::exec(const string& sqlStr)
+static void doExecWithoutParams(sqlite3* db, const string& sqlStr)
 {
     char* errMsg;
     const int rc = sqlite3_exec(db, sqlStr.c_str(), nullptr, nullptr, &errMsg);
     if (rc != SQLITE_OK) {
         const string error = "Failed to execute statement [" + sqlStr +
                              "] due to error: " + string(errMsg);
-        sqlite3_free(errMsg);
-        logAndThrow(error);
-    }
-}
-
-void Database::end()
-{
-    char* errMsg;
-    const int rc = sqlite3_exec(
-        db,
-        Constants::DatabaseCommands::END_TRANSACTION,
-        NULL,
-        NULL,
-        &errMsg);
-    if (rc != SQLITE_OK) {
-        const string error =
-            "END transaction failed due to error: " + string(errMsg);
         sqlite3_free(errMsg);
         logAndThrow(error);
     }
@@ -83,10 +44,64 @@ Database::Database(const string& dbPath)
     LOG->debug("Opened database at path {}", dbPath);
 }
 
+void Database::exec(const string& sqlStr)
+{
+    doExecWithoutParams(db, sqlStr);
+}
+
+Transaction Database::newTransaction()
+{
+    return Transaction(db);
+}
+
 Database::~Database()
 {
     int rc = sqlite3_close(db);
     if (rc != SQLITE_OK) {
         LOG->warn("Failed to close database: {}", sqlite3_errmsg(db));
+    }
+}
+
+Transaction::Transaction(sqlite3* db) : db(db)
+{
+    char* errMsg;
+    const int rc = sqlite3_exec(
+        db,
+        Constants::DatabaseCommands::BEGIN_TRANSACTION,
+        NULL,
+        NULL,
+        &errMsg);
+    if (rc != SQLITE_OK) {
+        const string error =
+            "BEGIN transaction failed due to error: " + string(errMsg);
+        sqlite3_free(errMsg);
+        logAndThrow(error);
+    }
+}
+
+sqlite3* Transaction::getDbPtr()
+{
+    return db;
+}
+
+void Transaction::exec(const string& sqlStr)
+{
+    doExecWithoutParams(db, sqlStr);
+}
+
+Transaction::~Transaction()
+{
+    char* errMsg;
+    const int rc = sqlite3_exec(
+        db,
+        Constants::DatabaseCommands::END_TRANSACTION,
+        NULL,
+        NULL,
+        &errMsg);
+    if (rc != SQLITE_OK) {
+        const string error =
+            "END transaction failed due to error: " + string(errMsg);
+        sqlite3_free(errMsg);
+        logAndThrow(error);
     }
 }
