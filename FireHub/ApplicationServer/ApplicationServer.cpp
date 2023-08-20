@@ -25,7 +25,7 @@ Logger SoapServer::getLogger() const
     return logger;
 }
 
-Database SoapServer::getDBHandle() const
+Database& SoapServer::getDBHandle()
 {
     return dbHandle;
 }

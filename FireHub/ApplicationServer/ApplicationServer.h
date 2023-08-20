@@ -17,7 +17,7 @@ protected:
 
 public:
     Logger getLogger() const;
-    Database getDBHandle() const;
+    Database& getDBHandle();
     void run();
     SoapServer(
         const std::string& serverName,

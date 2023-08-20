@@ -23,10 +23,11 @@ int ns1__getMovieInstanceMetadataById(
     LONG64 movieInstanceId,
     struct ns1__getMovieInstanceMetadataByIdResponse& response)
 {
-    const ApplicationServer* app = getApplication(soap);
-    Database dbHandle = app->getDBHandle();
+    ApplicationServer* app = getApplication(soap);
+    Database& dbHandle = app->getDBHandle();
     const Logger log = app->getLogger();
     MovieInstanceMetadataDAO metadataDao(dbHandle, log);
+
     log->debug(
         "Received request for movie metadata instance with ID {}",
         movieInstanceId);
@@ -42,8 +43,8 @@ int ns1__createMovieInstanceMetadataById(
     struct ns1__MovieInstanceMetadata* movieInstanceMetadata,
     struct ns1__createMovieInstanceMetadataByIdResponse& response)
 {
-    const ApplicationServer* app = getApplication(soap);
-    Database dbHandle = app->getDBHandle();
+    ApplicationServer* app = getApplication(soap);
+    Database& dbHandle = app->getDBHandle();
     const Logger log = app->getLogger();
     MovieInstanceMetadataDAO metadataDao(dbHandle, log);
 
