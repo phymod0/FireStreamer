@@ -7,3 +7,4 @@ FireStreamer.log
 ../dao/*.swo
 ../dao/*.swp
 Session.vim
+test/server.err

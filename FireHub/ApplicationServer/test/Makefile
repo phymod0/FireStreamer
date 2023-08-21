@@ -11,27 +11,33 @@ STUBGEN_FLAGS=-c++11 -L -s -v -x -c
 SCHEMA_NAME=ApplicationServer
 SOAP_STUB_OUTPUT_DIR=$(SOAP_DIR)
 
-# Compiler configuration
-CXX=g++
-CXX_OPTS=-g -Wall -Werror -Wextra -Wno-c++17-extensions -std=c++17 -fsanitize=address -fsanitize=undefined
-CXX_INCLUDES=$(SOAP_STUB_OUTPUT_DIR) .. ../../common
-CXX_INCLUDE_DIRS=$(patsubst %,-I%,$(CXX_INCLUDES))
-CXX_LIBS=-lgsoap++ -lfmt
-CXX_FLAGS=$(CXX_OPTS) $(CXX_INCLUDE_DIRS) $(CXX_LIBS)
-
-# C/CPP files to link with
-CXX_LINK_FILES=$(SOAP_STUB_OUTPUT_DIR)/*.cpp ctest.c $(SERVER_IMPLEMENTATION)
-
-# Individial test targets
-TEST_FILES := $(wildcard test_*.c)
-TESTS := $(patsubst %.c,%,$(TEST_FILES))
-EXEC := $(patsubst %.c,.__test_exec_%,$(TEST_FILES))
-
 # Required test resources
 APP_CGI := ../$(SCHEMA_NAME).cgi
 CGI_STAGING_DIR := ./cgi-bin
 TEST_SERVER := ./test_server.py
+SERVER_ERROR_LOG := ./server.err
+TEST_DB_PATH := /tmp/FireStreamerTestDatabase.db
 TEST_SERVER_SHUTDOWN_FILE := /tmp/stop_firestreamer_test_server
+
+# Compiler configuration
+CXX=g++
+CXX_OPTS=-g -Wall -Werror -Wextra -Wno-c++17-extensions -std=c++17 -fsanitize=address -fsanitize=undefined
+CXX_DEFINES=-DTEST_DB_PATH="\"$(TEST_DB_PATH)\""
+CXX_INCLUDES=$(SOAP_STUB_OUTPUT_DIR) .. ../../common
+CXX_INCLUDE_DIRS=$(patsubst %,-I%,$(CXX_INCLUDES))
+CXX_LIBS=-lgsoap++ -lfmt
+CXX_FLAGS=$(CXX_OPTS) $(CXX_DEFINES) $(CXX_INCLUDE_DIRS) $(CXX_LIBS)
+
+# C/CPP files to link with
+CXX_LINK_FILES=$(SOAP_STUB_OUTPUT_DIR)/*.cpp testlib.c ctest.c $(SERVER_IMPLEMENTATION)
+
+# Individual test targets
+TEST_FILES := $(wildcard test_*.c)
+TESTS := $(patsubst %.c,%,$(TEST_FILES))
+EXEC := $(patsubst %.c,.__test_exec_%,$(TEST_FILES))
+
+# Test environment variables
+TEST_ENVVARS := SPDLOG_LEVEL=debug FIRESTREAMER_DB_PATH=$(TEST_DB_PATH)
 
 xsd_headers: $(SCHEMA_DIR)/$(SCHEMA_NAME).xsd
 	mkdir -p $(SOAP_STUB_OUTPUT_DIR)/
@@ -50,7 +56,7 @@ copy_cgi: $(APP_CGI)
 
 start_server:
 	rm -rf $(TEST_SERVER_SHUTDOWN_FILE)
-	SPDLOG_LEVEL=debug $(TEST_SERVER) 1>/dev/null 2>/dev/null &
+	$(TEST_ENVVARS) $(TEST_SERVER) 1>/dev/null 2>$(SERVER_ERROR_LOG) &
 
 stop_server:
 	touch $(TEST_SERVER_SHUTDOWN_FILE)

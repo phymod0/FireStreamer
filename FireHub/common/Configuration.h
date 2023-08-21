@@ -12,6 +12,7 @@ class Configuration
 
 public:
     static Configuration loadFromFile(const std::string&);
+    static Configuration loadFromFile(const char*);
     std::string getLogFolder() const;
     std::string getLogName() const;
     std::string getDatabasePath() const;

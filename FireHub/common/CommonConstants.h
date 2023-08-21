@@ -1,12 +1,15 @@
 #ifndef COMMON_CONSTANTS
 #define COMMON_CONSTANTS
 
-#include <string>
-
 namespace Constants
 {
-inline const std::string CONFIG_PATH =
-    "/home/phymod0/.fireStreamer/config.json";
+// TODO(phymod0): s/phymod0/<user>/
+inline const char* CONFIG_PATH = "/home/phymod0/.fireStreamer/config.json";
+
+namespace EnvironmentVariables
+{
+inline const char* DB_PATH = "FIRESTREAMER_DB_PATH";
+}   // namespace EnvironmentVariables
 
 namespace TableDefinitions
 {
@@ -27,6 +30,6 @@ namespace DatabaseCommands
 inline const char* BEGIN_TRANSACTION = "BEGIN TRANSACTION;";
 inline const char* END_TRANSACTION = "END TRANSACTION;";
 }   // namespace DatabaseCommands
-};   // namespace Constants
+}   // namespace Constants
 
 #endif /* COMMON_CONSTANTS */

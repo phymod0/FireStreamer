@@ -13,7 +13,8 @@
 #define YELLOW "\x1B[33m"
 #define RESET  "\033[0m"
 
-#define BEFORE_EACH_HOOK_NAME "<pretest_hook>"
+#define BEFORE_EACH_HOOK_NAME        "<pretest_hook>"
+#define GLOBAL_BEFORE_EACH_HOOK_NAME "<global_pretest_hook>"
 
 typedef struct test_result {
     const char* test_name;
@@ -22,15 +23,28 @@ typedef struct test_result {
     unsigned long long n_failed_names;
 } test_result_t;
 
-// Default pre-test hook
+// Default suite pre-test hook
 __attribute__((weak)) void __ctest_reserved_before_test_hook(
     __attribute__((unused)) test_result_t* result)
 {
     return;
 }
 
-// Default post-test hook
+// Default suite post-test hook
 __attribute__((weak)) void __ctest_reserved_after_test_hook(void)
+{
+    return;
+}
+
+// Default global pre-test hook
+__attribute__((weak)) void __ctest_reserved_global_before_test_hook(
+    __attribute__((unused)) test_result_t* result)
+{
+    return;
+}
+
+// Default global post-test hook
+__attribute__((weak)) void __ctest_reserved_global_after_test_hook(void)
 {
     return;
 }
@@ -69,15 +83,25 @@ static void do_test_attempt(
     test_t test,
     test_result_t* result,
     test_before_hook_t before_hook,
-    test_after_hook_t after_hook)
+    test_after_hook_t after_hook,
+    test_before_hook_t global_before_hook,
+    test_after_hook_t global_after_hook)
 {
     // Allocate soap object
     struct soap* soap = soap_new();
     soap_init(soap);
-    // Execute "before" hook
+    // Execute "before" hooks
+    // Suite hook
     *result = {};
     result->test_name = BEFORE_EACH_HOOK_NAME;
     before_hook(result);
+    if (is_result_failed(result)) {
+        goto cleanup;
+    }
+    // Global hook
+    *result = {};
+    result->test_name = GLOBAL_BEFORE_EACH_HOOK_NAME;
+    global_before_hook(result);
     if (is_result_failed(result)) {
         goto cleanup;
     }
@@ -88,8 +112,9 @@ static void do_test_attempt(
         goto cleanup;
     }
 cleanup:
-    // Execute "after" hook
+    // Execute "after" hooks
     after_hook();
+    global_after_hook();
     // Free soap object
     soap_destroy(soap);
     soap_end(soap);
@@ -99,13 +124,21 @@ cleanup:
 static bool run_single_test(
     test_t test,
     test_before_hook_t before_hook,
-    test_after_hook_t after_hook)
+    test_after_hook_t after_hook,
+    test_before_hook_t global_before_hook,
+    test_after_hook_t global_after_hook)
 {
     srand(time(NULL));
 
     test_result_t result = {};
     for (int i = 0; i < N_RUNS_PER_TEST; ++i) {
-        do_test_attempt(test, &result, before_hook, after_hook);
+        do_test_attempt(
+            test,
+            &result,
+            before_hook,
+            after_hook,
+            global_before_hook,
+            global_after_hook);
         if (is_result_failed(&result)) {
             break;
         }
@@ -157,13 +190,20 @@ int test_run(
     size_t n_tests,
     test_before_hook_t before_hook,
     test_after_hook_t after_hook,
+    test_before_hook_t global_before_hook,
+    test_after_hook_t global_after_hook,
     const char* module_name)
 {
     size_t n_passed = 0;
     PSTDOUT("\n");
     print_bar(RESET, module_name);
     for (size_t i = 0; i < n_tests; ++i) {
-        if (run_single_test(tests[i], before_hook, after_hook)) {
+        if (run_single_test(
+                tests[i],
+                before_hook,
+                after_hook,
+                global_before_hook,
+                global_after_hook)) {
             ++n_passed;
         }
     }

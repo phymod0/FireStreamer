@@ -20,6 +20,8 @@ typedef void (*test_after_hook_t)(void);
 
 void __ctest_reserved_before_test_hook(test_result_t* result);
 void __ctest_reserved_after_test_hook(void);
+void __ctest_reserved_global_before_test_hook(test_result_t* result);
+void __ctest_reserved_global_after_test_hook(void);
 
 void test_name(test_result_t* result, const char* name);
 void test_acheck(test_result_t* result, bool check);
@@ -29,15 +31,21 @@ int test_run(
     size_t n_tests,
     test_before_hook_t before_hook,
     test_after_hook_t after_hook,
+    test_before_hook_t global_before_hook,
+    test_after_hook_t global_after_hook,
     const char* module_name);
 
 #define TEST_DEFINE(name, soap_ctx, result)                                    \
     __attribute_used__ void name(struct soap* soap_ctx, test_result_t* result)
-// Recommend using these macros instead of calling functions directly
 #define BEFORE_EACH                                                            \
     void __ctest_reserved_before_test_hook(                                    \
         __attribute__((unused)) test_result_t* __ctest_reserved_result)
 #define AFTER_EACH void __ctest_reserved_after_test_hook(void)
+#define GLOBAL_BEFORE_EACH                                                     \
+    void __ctest_reserved_global_before_test_hook(                             \
+        __attribute__((unused)) test_result_t* __ctest_reserved_result)
+#define GLOBAL_AFTER_EACH void __ctest_reserved_global_after_test_hook(void)
+// Recommend using these macros instead of calling functions directly
 #define TEST(name, soap_ctx)                                                   \
     TEST_DEFINE(name, soap_ctx, __ctest_reserved_result)
 #define DESCRIPTION(desc) test_name(__ctest_reserved_result, desc);
@@ -56,6 +64,8 @@ int test_run(
             n_tests,                                                           \
             __ctest_reserved_before_test_hook,                                 \
             __ctest_reserved_after_test_hook,                                  \
+            __ctest_reserved_global_before_test_hook,                          \
+            __ctest_reserved_global_after_test_hook,                           \
             __FILE__);                                                         \
     }
 

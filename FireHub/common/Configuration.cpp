@@ -1,18 +1,34 @@
-#include <cerrno>
-#include <fstream>
-#include <memory>
-#include <stdexcept>
-#include <string>
-
 #include "Configuration.h"
+#include "CommonConstants.h"
 #include "LoggerHelper.h"
 #include "Utils.h"
 
 #include <jsoncpp/json/json.h>
 
+#include <cerrno>
+#include <cstdlib>
+#include <fstream>
+#include <memory>
+#include <optional>
+#include <stdexcept>
+#include <string>
+
+using std::getenv;
+using std::nullopt;
+using std::optional;
 using std::string;
 
 static const Logger LOG = LoggerHelper::getBootstrapLogger(__FILE__);
+
+optional<string> getEnvironmentVariable(const char* key)
+{
+    const char* value = getenv(key);
+    if (value) {
+        return {string(value)};
+    } else {
+        return nullopt;
+    }
+}
 
 Configuration Configuration::loadFromFile(const string& fileName)
 {
@@ -25,6 +41,11 @@ Configuration Configuration::loadFromFile(const string& fileName)
     }
     jsonInput >> jsonConfig;
     return Configuration(jsonConfig);
+}
+
+Configuration Configuration::loadFromFile(const char* fileName)
+{
+    return loadFromFile(string(fileName));
 }
 
 string Configuration::getLogFolder() const
@@ -46,10 +67,21 @@ string Configuration::getLogName() const
 
 string Configuration::getDatabasePath() const
 {
-    const string dbPath =
-        Utils::getJsonString(this->configurationJson, {"database", "dbPath"});
-    LOG->debug("Got database path from JSON config: {}", dbPath);
-    return dbPath;
+    const optional<string> dbPathOptional =
+        getEnvironmentVariable(Constants::EnvironmentVariables::DB_PATH);
+    if (dbPathOptional == nullopt) {
+        // Not specified in the env vars, get the DB path from JSON config
+        const string dbPath = Utils::getJsonString(
+            this->configurationJson,
+            {"database", "dbPath"});
+        LOG->debug("Got database path from JSON config: {}", dbPath);
+        return dbPath;
+    } else {
+        // Use the DB path specified via FIRESTREAMER_DB_PATH
+        const string dbPath = dbPathOptional.value();
+        LOG->info("Using custom database path at {}", dbPath);
+        return dbPath;
+    }
 }
 
 Configuration::Configuration(const Json::Value configurationJson)

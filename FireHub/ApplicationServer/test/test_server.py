@@ -2,6 +2,7 @@
 from http.server import HTTPServer, CGIHTTPRequestHandler
 import time
 import os
+import sys
 
 PORT=8080
 SHUTDOWN_FILE="/tmp/stop_firestreamer_test_server"
@@ -20,6 +21,7 @@ def should_stop_server():
     last_checked_time = current_time
     return cached_result
 
+# print("Have envvar [2]: " + os.getenv("FIRESTREAMER_TEST"), file=sys.stderr)
 server_address = ('', PORT)
 CGIHTTPRequestHandler.cgi_directories = [CGI_DIR]
 httpd = HTTPServer(server_address, CGIHTTPRequestHandler)
