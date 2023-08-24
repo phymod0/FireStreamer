@@ -6,7 +6,7 @@
 #include "LoggerHelper.h"
 
 // TODO(phymod0): Rebrand as an application helper with server functionality
-class SoapServer
+class BaseApplication
 {
 private:
     const std::string& serverName;
@@ -19,12 +19,12 @@ public:
     Logger getLogger() const;
     Database& getDBHandle();
     void run();
-    SoapServer(
+    BaseApplication(
         const std::string& serverName,
         const Configuration& configuration);
 };
 
-class ApplicationServer : public SoapServer
+class ApplicationServer : public BaseApplication
 {
 private:
     static const std::string SERVER_NAME;
