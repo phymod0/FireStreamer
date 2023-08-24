@@ -24,9 +24,9 @@ int ns1__getMovieInstanceMetadataById(
     struct ns1__getMovieInstanceMetadataByIdResponse& response)
 {
     ApplicationServer* app = getApplication(soap);
-    Database& dbHandle = app->getDBHandle();
     const Logger log = app->getLogger();
-    MovieInstanceMetadataDAO metadataDao(dbHandle, log);
+    MovieInstanceMetadataDAO metadataDao = app->getMovieInstanceMetadataDAO();
+    (void) metadataDao;
 
     log->debug(
         "Received request for movie metadata instance with ID {}",
@@ -44,9 +44,8 @@ int ns1__createMovieInstanceMetadataById(
     struct ns1__createMovieInstanceMetadataByIdResponse& response)
 {
     ApplicationServer* app = getApplication(soap);
-    Database& dbHandle = app->getDBHandle();
     const Logger log = app->getLogger();
-    MovieInstanceMetadataDAO metadataDao(dbHandle, log);
+    MovieInstanceMetadataDAO metadataDao = app->getMovieInstanceMetadataDAO();
 
     const string& title = movieInstanceMetadata->title;
     const string* magnetLink = movieInstanceMetadata->magnetLink;

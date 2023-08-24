@@ -22,7 +22,7 @@ static string toSQLFieldValue(const string* str)
 
 MovieInstanceMetadataDAO::MovieInstanceMetadataDAO(
     Database& dbHandle,
-    const Logger& logger)
+    Logger& logger)
     : dbHandle(dbHandle), log(logger)
 {
 }

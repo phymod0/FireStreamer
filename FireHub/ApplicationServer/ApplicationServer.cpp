@@ -20,32 +20,6 @@ using namespace spdlog;
 
 static const Logger LOG = LoggerHelper::getBootstrapLogger(__FILE__);
 
-Logger BaseApplication::getLogger() const
-{
-    return logger;
-}
-
-Database& BaseApplication::getDBHandle()
-{
-    return dbHandle;
-}
-
-void BaseApplication::run()
-{
-    struct soap* soap = soap_new();
-    soap->user = this;
-    soap_serve(soap);
-}
-
-BaseApplication::BaseApplication(
-    const string& serverName,
-    const Configuration& configuration)
-    : serverName(serverName),
-      logger(LoggerHelper::getLogger(serverName, configuration)),
-      dbHandle(configuration.getDatabasePath(), logger)
-{
-}
-
 const string ApplicationServer::SERVER_NAME = "ApplicationServer";
 
 const vector<string> ApplicationServer::tableDefinitions = {
