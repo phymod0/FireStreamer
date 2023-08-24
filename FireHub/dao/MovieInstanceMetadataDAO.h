@@ -19,7 +19,6 @@ class MovieInstanceMetadataDAO
     Database& dbHandle;
     const Logger& log;
     friend BaseApplication;
-    // TODO(phymod0): Make SoapServer a factory for DAO instances instead
     MovieInstanceMetadataDAO(Database&, Logger&);
 
 public:
