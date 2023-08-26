@@ -13,7 +13,7 @@ AFTER_EACH {}
 
 TEST(test_soap_request, soap)
 {
-    DESCRIPTION("Movie instance metadata creation");
+    DESCRIPTION("movie instance metadata creation");
 
     int soap_err;
     const string testTitle = "da cunjooring";
