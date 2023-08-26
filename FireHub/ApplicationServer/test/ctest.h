@@ -45,15 +45,38 @@ int test_run(
     void __ctest_reserved_global_before_test_hook(                             \
         __attribute__((unused)) test_result_t* __ctest_reserved_result)
 #define GLOBAL_AFTER_EACH void __ctest_reserved_global_after_test_hook(void)
+
+/* How to abort in case of a test failure */
+#ifdef __cplusplus
+#define __CTEST_ABORT()                                                        \
+    do {                                                                       \
+        throw "ctest aborting";                                                \
+    } while (0)
+#else
+#define __CTEST_ABORT()                                                        \
+    do {                                                                       \
+        goto failure;                                                          \
+    } while (0)
+#endif
+
+#define __CTEST_ASSERT(cond, desc)                                             \
+    do {                                                                       \
+        const bool success = (cond);                                           \
+        test_check(__ctest_reserved_result, desc, success);                    \
+        if (!success) {                                                        \
+            __CTEST_ABORT();                                                   \
+        }                                                                      \
+    } while (0)
+
 // Recommend using these macros instead of calling functions directly
 #define TEST(name, soap_ctx)                                                   \
     TEST_DEFINE(name, soap_ctx, __ctest_reserved_result)
-#define DESCRIPTION(desc) test_name(__ctest_reserved_result, desc);
-#define ASSERT_TRUE(cond, desc)                                                \
-    test_check(__ctest_reserved_result, desc, (cond))
-#define ASSERT_FALSE(cond, desc)                                               \
-    test_check(__ctest_reserved_result, desc, !(cond))
-#define FAIL(desc) test_check(__ctest_reserved_result, desc, false)
+#define DESCRIPTION(desc)          test_name(__ctest_reserved_result, desc);
+#define ASSERT_TRUE(cond, desc)    __CTEST_ASSERT(cond, desc)
+#define ASSERT_FALSE(cond, desc)   __CTEST_ASSERT(!(cond), desc)
+#define ASSERT_NULL(ptr, desc)     __CTEST_ASSERT((ptr) == NULL, desc)
+#define ASSERT_NOT_NULL(ptr, desc) __CTEST_ASSERT((ptr) != NULL, desc)
+#define FAIL(desc)                 __CTEST_ASSERT(false, desc)
 #define TEST_SUITE(...)                                                        \
     int main(void)                                                             \
     {                                                                          \

@@ -107,7 +107,15 @@ static void do_test_attempt(
     }
     // Execute test
     *result = {};
-    test(soap, result);
+#ifdef __cplusplus
+    try {
+#endif /* __cplusplus */
+        test(soap, result);
+#ifdef __cplusplus
+    } catch (const char* str) {
+        // Test aborted due to failure
+    }
+#endif /* __cplusplus */
     if (is_result_failed(result)) {
         goto cleanup;
     }
