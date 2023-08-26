@@ -26,15 +26,21 @@ int ns1__getMovieInstanceMetadataById(
     ApplicationServer* app = getApplication(soap);
     const Logger log = app->getLogger();
     MovieInstanceMetadataDAO metadataDao = app->getMovieInstanceMetadataDAO();
-    (void) metadataDao;
 
     log->debug(
-        "Received request for movie metadata instance with ID {}",
+        "Received read request for movie metadata instance with ID {}",
         movieInstanceId);
-    const string titleResponse =
-        "Got movie title: " + to_string(movieInstanceId);
-    response.movieInstanceMetadata =
-        soap_new_req_ns1__MovieInstanceMetadata(soap, titleResponse);
+    metadataDao.getById(
+        movieInstanceId,
+        [soap,
+         &response](string& title, string* magnetLink, string* coverImageLink) {
+            response.movieInstanceMetadata =
+                soap_new_set_ns1__MovieInstanceMetadata(
+                    soap,
+                    title,
+                    magnetLink,
+                    coverImageLink);
+        });
     return SOAP_OK;
 }
 

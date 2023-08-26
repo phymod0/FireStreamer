@@ -22,8 +22,7 @@ class MovieInstanceMetadataDAO
     const Logger& log;
     friend BaseApplication;
     MovieInstanceMetadataDAO(Database&, Logger&);
-    using Receiver =
-        function<void(const string&, const string*, const string*)>;
+    using Receiver = function<void(string&, string*, string*)>;
 
 public:
     int64_t create(const string&, const string*, const string*);

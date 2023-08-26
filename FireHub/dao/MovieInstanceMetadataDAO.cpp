@@ -5,6 +5,7 @@
 
 #include <cassert>
 #include <cstdint>
+#include <cstdio>
 #include <sstream>
 #include <string>
 
@@ -21,11 +22,25 @@ static string toSQLFieldValue(const string* str)
     return str == nullptr ? "NULL" : toSQLFieldValue(*str);
 }
 
-static string* optionalTextFieldToStr(sqlite3_stmt* stmt, int idx)
+static string getTextField(sqlite3_stmt* stmt, int idx)
 {
-    const char* charPtr =
-        reinterpret_cast<const char*>(sqlite3_column_text(stmt, idx));
-    return charPtr == nullptr ? nullptr : new string(charPtr);
+    assert(SQLITE3_TEXT == sqlite3_column_type(stmt, idx));
+    return reinterpret_cast<const char*>(sqlite3_column_text(stmt, idx));
+}
+
+static string* getOptionalTextField(sqlite3_stmt* stmt, int idx)
+{
+    const int type = sqlite3_column_type(stmt, idx);
+    switch (type) {
+    case SQLITE3_TEXT:
+        return new string(
+            reinterpret_cast<const char*>(sqlite3_column_text(stmt, idx)));
+    case SQLITE_NULL:
+        return nullptr;
+    default:
+        // Shouldn't happen
+        assert(false);
+    }
 }
 
 MovieInstanceMetadataDAO::MovieInstanceMetadataDAO(
@@ -56,22 +71,15 @@ void MovieInstanceMetadataDAO::getById(int64_t id, const Receiver& receiver)
     stringstream query;
     query << "SELECT TITLE, MAGNET_LINK, COVER_IMAGE_LINK "
           << "FROM MOVIE_INSTANCE_METADATA "
-          << "WHERE ID EQUALS " << id;
+          << "WHERE ID == " << id;
     Scan scan = dbHandle.newScan(query);
     scan.run([&receiver](sqlite3_stmt* stmt) {
-        // ID + 3 other fields = 4 columns
-        assert(4 == sqlite3_column_count(stmt));
-        // Get title
-        assert(SQLITE3_TEXT == sqlite3_column_type(stmt, 1));
-        const string titleStr =
-            reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
-        // Get magnet link
-        assert(SQLITE3_TEXT == sqlite3_column_type(stmt, 2));
-        const string* magnetLink = optionalTextFieldToStr(stmt, 2);
-        // Get cover image link
-        assert(SQLITE3_TEXT == sqlite3_column_type(stmt, 3));
-        const string* coverImageLink = optionalTextFieldToStr(stmt, 3);
-        // Receive values
+        // Make sure we have the expected fields (title, magnet, image)
+        assert(3 == sqlite3_column_count(stmt));
+        // Extract values
+        string titleStr = getTextField(stmt, 0);
+        string* magnetLink = getOptionalTextField(stmt, 1);
+        string* coverImageLink = getOptionalTextField(stmt, 2);
         receiver(titleStr, magnetLink, coverImageLink);
         // Cleanup
         delete magnetLink;
