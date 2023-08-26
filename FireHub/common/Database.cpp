@@ -5,10 +5,12 @@
 #include <sqlite3.h>
 
 #include <cstdint>
+#include <functional>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 
+using std::function;
 using std::runtime_error;
 using std::string;
 using std::stringstream;
@@ -85,6 +87,16 @@ Transaction Database::newTransaction()
     return Transaction(db, log);
 }
 
+Scan Database::newScan(const string& query)
+{
+    return Scan(db, log, query);
+}
+
+Scan Database::newScan(const stringstream& query)
+{
+    return newScan(query.str());
+}
+
 Database::~Database()
 {
     log->debug("Closing database...");
@@ -148,5 +160,55 @@ Transaction::~Transaction()
             "END transaction failed due to error: " + string(errMsg);
         sqlite3_free(errMsg);
         logAndThrow(error);
+    }
+}
+
+void Scan::logAndThrow(const string& errorMessage)
+{
+    __logAndThrow(errorMessage, log);
+}
+
+Scan::Scan(sqlite3* db, const Logger& logger, const string query)
+    : db(db), log(logger), stmt(NULL)
+{
+    sqlite3_stmt* stmt;
+    log->debug("Starting SELECT scan");
+    const int rc = sqlite3_prepare_v3(
+        db,
+        query.c_str(),
+        query.length() + 1,
+        0,
+        &stmt,
+        NULL);
+    if (rc != SQLITE_OK) {
+        const string error = "Scan initialization failed due to error: " +
+                             string(sqlite3_errmsg(db));
+        logAndThrow(error);
+    }
+    this->stmt = stmt;
+}
+
+sqlite3* Scan::getDbPtr()
+{
+    return db;
+}
+
+void Scan::run(const StatementReceiver& statementReceiver)
+{
+    int rc;
+    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+        if (statementReceiver(stmt) == STOP) {
+            break;
+        }
+    }
+    if (rc != SQLITE_DONE) {
+        return;
+    }
+}
+
+Scan::~Scan()
+{
+    if (stmt != NULL) {
+        sqlite3_finalize(stmt);
     }
 }
