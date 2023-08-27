@@ -4,5 +4,16 @@ How to get the initial session-id:
 curl -vvv -X POST http://localhost:9091/transmission/rpc -d '{"method": "session-get", "arguments": {"fields": ["session-id"]}}'
 ```
 
+How to get the current list of torrents:
+
+```
+curl -vvv -X POST http://localhost:9091/transmission/rpc -H "X-Transmission-Session-Id: CZecU2Jo0N9FsSU3dQkwh5i2uQZyzVZLZWGmhbenQ68Doyme" -d '{"method": "torrent-get", "arguments": {"fields": ["id", "name"]}}'
+```
+
 RPC specification link: https://github.com/transmission/transmission/blob/main/docs/rpc-spec.md
 
+Torrenting steps:
+- Make sure auth is disabled in the transmissions config (sudo /etc/transmission-daemon/settings.json)
+- Get a session ID by failing a request (the request you want to perform or the specific request for getting the session ID if inapplicable)
+- Include the Session ID with the 'X-Transmission-Session-Id' HTTP header in the POST request you make to transmissions
+- Follow RFC specification link for server API documentation
