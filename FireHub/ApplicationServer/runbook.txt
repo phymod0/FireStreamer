@@ -1,0 +1,8 @@
+How to get the initial session-id:
+
+```
+curl -vvv -X POST http://localhost:9091/transmission/rpc -d '{"method": "session-get", "arguments": {"fields": ["session-id"]}}'
+```
+
+RPC specification link: https://github.com/transmission/transmission/blob/main/docs/rpc-spec.md
+
