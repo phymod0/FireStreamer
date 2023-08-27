@@ -81,9 +81,6 @@ void MovieInstanceMetadataDAO::getById(int64_t id, const Receiver& receiver)
         string* magnetLink = getOptionalTextField(stmt, 1);
         string* coverImageLink = getOptionalTextField(stmt, 2);
         receiver(titleStr, magnetLink, coverImageLink);
-        // Cleanup
-        delete magnetLink;
-        delete coverImageLink;
         // We only expect one unique row
         return Scan::Command::STOP;
     });

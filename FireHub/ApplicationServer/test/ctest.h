@@ -36,7 +36,9 @@ int test_run(
     const char* module_name);
 
 #define TEST_DEFINE(name, soap_ctx, result)                                    \
-    __attribute_used__ void name(struct soap* soap_ctx, test_result_t* result)
+    __attribute_used__ void name(                                              \
+        __attribute__((unused)) struct soap* soap_ctx,                         \
+        __attribute__((unused)) test_result_t* result)
 #define BEFORE_EACH                                                            \
     void __ctest_reserved_before_test_hook(                                    \
         __attribute__((unused)) test_result_t* __ctest_reserved_result)
