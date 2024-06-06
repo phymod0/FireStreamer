@@ -3,6 +3,5 @@ CREATE TABLE movies (
     title VARCHAR(255) NOT NULL,
     year INT,
     rating INT,
-    cover_image_url VARCHAR(255),
-    magnet_link VARCHAR(255)
+    cover_image_url VARCHAR(4096)
 )
