@@ -3,11 +3,11 @@
 diesel::table! {
     downloads (id) {
         id -> Integer,
-        quality -> Nullable<Integer>,
-        size_bytes -> Nullable<Integer>,
-        magnet_link -> Nullable<Text>,
-        seeder_count -> Nullable<Integer>,
-        peer_count -> Nullable<Integer>,
+        quality -> Integer,
+        size_bytes -> BigInt,
+        magnet_link -> Text,
+        seeder_count -> Integer,
+        peer_count -> Integer,
         movie_id -> Integer,
     }
 }
@@ -16,8 +16,8 @@ diesel::table! {
     movies (id) {
         id -> Integer,
         title -> Text,
-        year -> Nullable<Integer>,
-        rating -> Nullable<Integer>,
+        year -> Integer,
+        rating -> Integer,
         cover_image_url -> Nullable<Text>,
     }
 }

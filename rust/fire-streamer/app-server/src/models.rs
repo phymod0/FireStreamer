@@ -8,8 +8,8 @@ use serde_derive::Serialize;
 pub struct Movie {
     pub id: i32,
     pub title: String,
-    pub year: Option<i32>,
-    pub rating: Option<i32>,
+    pub year: i32,
+    pub rating: i32,
     pub cover_image_url: Option<String>,
 }
 
@@ -17,6 +17,9 @@ pub struct Movie {
 #[diesel(table_name = movies)]
 pub struct NewMovie<'a> {
     pub title: &'a str,
+    pub year: i32,
+    pub rating: i32,
+    pub cover_image_url: Option<&'a str>,
 }
 
 #[derive(Queryable, Selectable, Serialize, Associations)]
@@ -25,10 +28,10 @@ pub struct NewMovie<'a> {
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Download {
     pub id: i32,
-    pub quality: Option<i32>,
-    pub size_bytes: Option<i32>,
-    pub magnet_link: Option<String>,
-    pub seeder_count: Option<i32>,
-    pub peer_count: Option<i32>,
+    pub quality: i32,
+    pub size_bytes: i64,
+    pub magnet_link: String,
+    pub seeder_count: i32,
+    pub peer_count: i32,
     pub movie_id: i32,
 }
