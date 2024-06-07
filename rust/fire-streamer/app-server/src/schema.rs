@@ -17,7 +17,9 @@ diesel::table! {
         id -> Integer,
         title -> Text,
         year -> Integer,
+        synopsis -> Nullable<Text>,
         rating -> Integer,
+        runtime_minutes -> Integer,
         cover_image_url -> Nullable<Text>,
     }
 }

@@ -9,7 +9,9 @@ pub struct Movie {
     pub id: i32,
     pub title: String,
     pub year: i32,
+    pub synopsis: Option<String>,
     pub rating: i32,
+    pub runtime_minutes: i32,
     pub cover_image_url: Option<String>,
 }
 
@@ -18,7 +20,9 @@ pub struct Movie {
 pub struct NewMovie<'a> {
     pub title: &'a str,
     pub year: i32,
+    pub synopsis: Option<&'a str>,
     pub rating: i32,
+    pub runtime_minutes: i32,
     pub cover_image_url: Option<&'a str>,
 }
 
