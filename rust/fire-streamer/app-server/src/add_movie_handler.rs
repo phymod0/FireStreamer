@@ -9,7 +9,10 @@ use axum::{
 use crate::{
     models::*,
     errors::AppError,
-    schema::movies,
+    schema::{
+        movies,
+        downloads,
+    },
     common::{
         HandlerResponse,
         last_insert_rowid,
@@ -60,9 +63,21 @@ pub struct AddMovieResponse {
 fn add_movie(req: &AddMovieRequest) -> Result<AddMovieResponse, AppError> {
     let movie: NewMovie = req.into();
     let db = &mut connect_db()?;
-    // TODO(phymod0): Populate genres and downloads too
     diesel::insert_into(movies::table).values(movie).execute(db)?;
     let id: i32 = diesel::select(last_insert_rowid()).get_result::<i32>(db)?;
+    // TODO(phymod0): Populate genres and downloads too
+    for download in &req.downloads {
+        let new_download = NewDownload {
+            // TODO(phymod0): Find a suitable way to convert quality strings to their integer counterparts
+            quality: 123,
+            size_bytes: download.size_bytes as i64,
+            magnet_link: &download.magnet_link,
+            seeder_count: download.seeder_count as i32,
+            peer_count: download.peer_count as i32,
+            movie_id: id,
+        };
+        diesel::insert_into(downloads::table).values(&new_download).execute(db)?;
+    }
     Ok(AddMovieResponse { id })
 }
 

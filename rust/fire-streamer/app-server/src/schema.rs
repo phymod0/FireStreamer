@@ -13,6 +13,14 @@ diesel::table! {
 }
 
 diesel::table! {
+    movie_genres (id) {
+        id -> Integer,
+        movie_id -> Integer,
+        genre -> Integer,
+    }
+}
+
+diesel::table! {
     movies (id) {
         id -> Integer,
         title -> Text,
@@ -25,8 +33,10 @@ diesel::table! {
 }
 
 diesel::joinable!(downloads -> movies (movie_id));
+diesel::joinable!(movie_genres -> movies (movie_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     downloads,
+    movie_genres,
     movies,
 );

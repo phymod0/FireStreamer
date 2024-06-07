@@ -39,3 +39,24 @@ pub struct Download {
     pub peer_count: i32,
     pub movie_id: i32,
 }
+
+#[derive(Insertable)]
+#[diesel(table_name = downloads)]
+pub struct NewDownload<'a> {
+    pub quality: i32,
+    pub size_bytes: i64,
+    pub magnet_link: &'a str,
+    pub seeder_count: i32,
+    pub peer_count: i32,
+    pub movie_id: i32,
+}
+
+#[derive(Queryable, Selectable, Serialize, Associations)]
+#[diesel(belongs_to(Movie))]
+#[diesel(table_name = movie_genres)]
+#[diesel(check_for_backend(diesel::sqlite::Sqlite))]
+pub struct MovieGenres {
+    pub id: i32,
+    pub movie_id: i32,
+    pub genre: i32,
+}
