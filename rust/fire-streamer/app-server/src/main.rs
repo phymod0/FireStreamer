@@ -2,6 +2,7 @@ mod models;
 mod schema;
 mod errors;
 mod common;
+mod constants;
 
 // Handlers
 mod get_movie_handler;

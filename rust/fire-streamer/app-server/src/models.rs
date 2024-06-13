@@ -55,8 +55,15 @@ pub struct NewDownload<'a> {
 #[diesel(belongs_to(Movie))]
 #[diesel(table_name = movie_genres)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
-pub struct MovieGenres {
+pub struct MovieGenreAssociation {
     pub id: i32,
-    pub movie_id: i32,
     pub genre: i32,
+    pub movie_id: i32,
+}
+
+#[derive(Insertable)]
+#[diesel(table_name = movie_genres)]
+pub struct NewMovieGenreAssociation {
+    pub genre: i32,
+    pub movie_id: i32,
 }

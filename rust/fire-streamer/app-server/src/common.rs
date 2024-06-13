@@ -1,7 +1,7 @@
-use std::env;
+use crate::errors::AppError;
 use axum::http::StatusCode;
 use diesel::prelude::*;
-use crate::errors::AppError;
+use std::env;
 
 pub type HandlerResponse<T> = Result<(StatusCode, T), StatusCode>;
 

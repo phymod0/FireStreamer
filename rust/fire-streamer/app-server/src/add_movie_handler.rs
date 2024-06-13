@@ -12,17 +12,23 @@ use crate::{
     schema::{
         movies,
         downloads,
+        movie_genres,
     },
     common::{
         HandlerResponse,
         last_insert_rowid,
         connect_db,
     },
+    constants::{
+        NumberedEnum,
+        Quality,
+        Genre,
+    },
 };
 
 #[derive(Deserialize, Debug)]
 struct AddMovieRequestDownload {
-    quality: String,
+    quality: u32,
     size_bytes: u64,
     magnet_link: String,
     seeder_count: u32,
@@ -39,20 +45,7 @@ pub struct AddMovieRequest {
     runtime_minutes: u32,
     cover_image_url: Option<String>,
     downloads: Vec<AddMovieRequestDownload>,
-    genres: Vec<String>,
-}
-
-impl<'a> From<&'a AddMovieRequest> for NewMovie<'a> {
-    fn from(movie: &'a AddMovieRequest) -> Self {
-        Self {
-            title: &movie.title,
-            year: movie.year as i32,
-            synopsis: movie.synopsis.as_ref().map(|s| s.as_str()),
-            rating: (movie.rating_major * 10 + movie.rating_minor) as i32,
-            runtime_minutes: movie.runtime_minutes as i32,
-            cover_image_url: movie.cover_image_url.as_ref().map(|s| s.as_str()),
-        }
-    }
+    genres: Vec<u32>,
 }
 
 #[derive(Serialize)]
@@ -61,24 +54,37 @@ pub struct AddMovieResponse {
 }
 
 fn add_movie(req: &AddMovieRequest) -> Result<AddMovieResponse, AppError> {
-    let movie: NewMovie = req.into();
     let db = &mut connect_db()?;
+    let movie = NewMovie {
+        title: &req.title,
+        year: req.year as i32,
+        synopsis: req.synopsis.as_ref().map(|s| s.as_str()),
+        rating: (req.rating_major * 10 + req.rating_minor) as i32,
+        runtime_minutes: req.runtime_minutes as i32,
+        cover_image_url: req.cover_image_url.as_ref().map(|s| s.as_str()),
+    };
     diesel::insert_into(movies::table).values(movie).execute(db)?;
-    let id: i32 = diesel::select(last_insert_rowid()).get_result::<i32>(db)?;
-    // TODO(phymod0): Populate genres and downloads too
+    let movie_id: i32 = diesel::select(last_insert_rowid()).get_result::<i32>(db)?;
+    // TODO(phymod0): Ensure that diesel commits all writes atomically
+    for genre in &req.genres {
+        let genre_association = NewMovieGenreAssociation {
+            genre: Genre::validate(*genre)? as i32,
+            movie_id,
+        };
+        diesel::insert_into(movie_genres::table).values(&genre_association).execute(db)?;
+    }
     for download in &req.downloads {
         let new_download = NewDownload {
-            // TODO(phymod0): Find a suitable way to convert quality strings to their integer counterparts
-            quality: 123,
+            quality: Quality::validate(download.quality)? as i32,
             size_bytes: download.size_bytes as i64,
             magnet_link: &download.magnet_link,
             seeder_count: download.seeder_count as i32,
             peer_count: download.peer_count as i32,
-            movie_id: id,
+            movie_id,
         };
         diesel::insert_into(downloads::table).values(&new_download).execute(db)?;
     }
-    Ok(AddMovieResponse { id })
+    Ok(AddMovieResponse { id: movie_id })
 }
 
 pub async fn handler(
