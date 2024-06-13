@@ -53,8 +53,7 @@ pub struct AddMovieResponse {
     id: i32,
 }
 
-fn add_movie(req: &AddMovieRequest) -> Result<AddMovieResponse, AppError> {
-    let db = &mut connect_db()?;
+fn add_movie(req: &AddMovieRequest, db: &mut SqliteConnection) -> Result<AddMovieResponse, AppError> {
     let movie = NewMovie {
         title: &req.title,
         year: req.year as i32,
@@ -65,7 +64,6 @@ fn add_movie(req: &AddMovieRequest) -> Result<AddMovieResponse, AppError> {
     };
     diesel::insert_into(movies::table).values(movie).execute(db)?;
     let movie_id: i32 = diesel::select(last_insert_rowid()).get_result::<i32>(db)?;
-    // TODO(phymod0): Ensure that diesel commits all writes atomically
     for genre in &req.genres {
         let genre_association = NewMovieGenreAssociation {
             genre: Genre::validate(*genre)? as i32,
@@ -87,9 +85,8 @@ fn add_movie(req: &AddMovieRequest) -> Result<AddMovieResponse, AppError> {
     Ok(AddMovieResponse { id: movie_id })
 }
 
-pub async fn handler(
-    Json(req): Json<AddMovieRequest>,
-) -> HandlerResponse<Json<AddMovieResponse>> {
+pub async fn handler(Json(req): Json<AddMovieRequest>) -> HandlerResponse<Json<AddMovieResponse>> {
     debug!("Add movie handler called with parameters: \"{:#?}\"", req);
-    Ok((StatusCode::CREATED, Json(add_movie(&req)?)))
+    let result = connect_db()?.transaction::<AddMovieResponse, AppError, _>(|conn| add_movie(&req, conn))?;
+    Ok((StatusCode::CREATED, Json(result)))
 }
