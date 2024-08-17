@@ -1,29 +1,14 @@
-use serde_derive::{Deserialize, Serialize};
+use axum::{http::StatusCode, Json};
 use diesel::prelude::*;
+use serde_derive::{Deserialize, Serialize};
 use tracing::*;
-use axum::{
-    Json,
-    http::StatusCode,
-};
 
 use crate::{
-    models::*,
+    common::{connect_db, last_insert_rowid, HandlerResponse},
+    constants::{Genre, NumberedEnum, Quality},
     errors::AppError,
-    schema::{
-        movies,
-        downloads,
-        movie_genres,
-    },
-    common::{
-        HandlerResponse,
-        last_insert_rowid,
-        connect_db,
-    },
-    constants::{
-        NumberedEnum,
-        Quality,
-        Genre,
-    },
+    models::*,
+    schema::{downloads, movie_genres, movies},
 };
 
 #[derive(Deserialize, Debug)]
@@ -53,7 +38,10 @@ pub struct AddMovieResponse {
     id: i32,
 }
 
-fn add_movie(req: &AddMovieRequest, db: &mut SqliteConnection) -> Result<AddMovieResponse, AppError> {
+fn add_movie(
+    req: &AddMovieRequest,
+    db: &mut SqliteConnection,
+) -> Result<AddMovieResponse, AppError> {
     let movie = NewMovie {
         title: &req.title,
         year: req.year as i32,
@@ -62,14 +50,18 @@ fn add_movie(req: &AddMovieRequest, db: &mut SqliteConnection) -> Result<AddMovi
         runtime_minutes: req.runtime_minutes as i32,
         cover_image_url: req.cover_image_url.as_ref().map(|s| s.as_str()),
     };
-    diesel::insert_into(movies::table).values(movie).execute(db)?;
+    diesel::insert_into(movies::table)
+        .values(movie)
+        .execute(db)?;
     let movie_id: i32 = diesel::select(last_insert_rowid()).get_result::<i32>(db)?;
     for genre in &req.genres {
         let genre_association = NewMovieGenreAssociation {
             genre: Genre::validate(*genre)? as i32,
             movie_id,
         };
-        diesel::insert_into(movie_genres::table).values(&genre_association).execute(db)?;
+        diesel::insert_into(movie_genres::table)
+            .values(&genre_association)
+            .execute(db)?;
     }
     for download in &req.downloads {
         let new_download = NewDownload {
@@ -80,13 +72,16 @@ fn add_movie(req: &AddMovieRequest, db: &mut SqliteConnection) -> Result<AddMovi
             peer_count: download.peer_count as i32,
             movie_id,
         };
-        diesel::insert_into(downloads::table).values(&new_download).execute(db)?;
+        diesel::insert_into(downloads::table)
+            .values(&new_download)
+            .execute(db)?;
     }
     Ok(AddMovieResponse { id: movie_id })
 }
 
 pub async fn handler(Json(req): Json<AddMovieRequest>) -> HandlerResponse<Json<AddMovieResponse>> {
     debug!("Add movie handler called with parameters: \"{:#?}\"", req);
-    let result = connect_db()?.transaction::<AddMovieResponse, AppError, _>(|conn| add_movie(&req, conn))?;
+    let result =
+        connect_db()?.transaction::<AddMovieResponse, AppError, _>(|conn| add_movie(&req, conn))?;
     Ok((StatusCode::CREATED, Json(result)))
 }

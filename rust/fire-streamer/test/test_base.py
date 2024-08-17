@@ -25,5 +25,5 @@ class BaseTest(TestCase):
     def do_get(self, resource):
         return requests.get('http://localhost:' + TEST_SERVER_PORT + '/' + resource)
 
-    def do_post(self, resource):
-        return requests.post('http://localhost:' + TEST_SERVER_PORT + '/' + resource)
+    def do_post(self, resource, body=None):
+        return requests.post('http://localhost:' + TEST_SERVER_PORT + '/' + resource, json=body)

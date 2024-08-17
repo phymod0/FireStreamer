@@ -1,13 +1,13 @@
-mod models;
-mod schema;
-mod errors;
 mod common;
 mod constants;
+mod errors;
+mod models;
+mod schema;
 
 // Handlers
+mod add_movie_handler;
 mod get_movie_handler;
 mod get_movies_handler;
-mod add_movie_handler;
 
 #[tokio::main]
 async fn main() {
