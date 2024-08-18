@@ -18,7 +18,9 @@ class MoviesTest(BaseTest):
         self.assertEqual(1, response.json()["id"])
         response = self.do_get("/movie/1")
         self.assertEqual(200, response.status_code)
-        self.assertEqual("The Test Movie", response.json()["title"])
+        response_json = response.json()
+        self.assertEqual("The Test Movie", response_json["title"])
+        self.assertEqual(2024, response_json["year"])
         # TODO(phymod0): Assert correctness of _remaining_ response
 
     def test_create_and_get_single_movie_full(self):
