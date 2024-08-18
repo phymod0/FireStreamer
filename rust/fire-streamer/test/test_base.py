@@ -1,25 +1,25 @@
 from unittest import TestCase
 import requests
+import os
+import shutil
 
 TEST_SERVER_PORT="3000"
 
 class BaseTest(TestCase):
     @classmethod
     def setUpClass(cls):
-        # Code to run once before all tests
         pass
 
     @classmethod
     def tearDownClass(cls):
-        # Code to run once after all tests
         pass
 
     def setUp(self):
-        # Code to run before each test
-        pass
+        db_path = os.getenv('DATABASE_URL')
+        blank_path = os.getenv('BLANK_DB_BACKUP')
+        shutil.copy(blank_path, db_path)
 
     def tearDown(self):
-        # Code to run after each test
         pass
 
     def do_get(self, resource):
