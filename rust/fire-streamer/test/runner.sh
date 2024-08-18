@@ -5,6 +5,7 @@ APP_SERVER_PATH="$RUST_PROJECT_PATH/app-server"
 MOVIE_COLLECTOR_PATH="$RUST_PROJECT_PATH/movie-collector"
 export BLANK_DB_BACKUP="$(pwd)/blank_backup.db"
 export DATABASE_URL="$(pwd)/test_db.db"
+export RUST_LOG="warn"
 
 function create_test_db() {
     local wd=$(pwd)
