@@ -50,6 +50,7 @@ fn get_downloads_for_movie_id(
 
 fn get_movie_json(id: i32) -> Result<AxumJson, AppError> {
     let db = &mut connect_db()?;
+    // TODO(phymod0): Make these operations atomic
     let mut movie_json = serde_json::to_value(get_movie_by_id(db, id)?).unwrap();
     movie_json["genres"] = json!(get_genres_for_movie_id(db, id)?);
     movie_json["downloads"] = json!(get_downloads_for_movie_id(db, id)?);
