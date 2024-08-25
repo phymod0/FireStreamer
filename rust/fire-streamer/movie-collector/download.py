@@ -1,10 +1,10 @@
 from enum import Enum, auto
 
 class Quality(Enum):
-    RES_720P = auto()
-    RES_1080P = auto()
-    RES_2160P = auto()
-    RES_3D = auto()
+    RES_720P = 720
+    RES_1080P = 1080
+    RES_2160P = 2160
+    RES_3D = 3
 
 def get_quality_by_name(name):
     name = f"RES_{name.strip().upper()}"
