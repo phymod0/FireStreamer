@@ -1,21 +1,15 @@
 use crate::errors::AppError;
-
-pub trait NumberedEnum where Self: Sized {
-    fn from(val: u32) -> Result<Self, AppError>;
-
-    fn validate(val: u32) -> Result<u32, AppError> {
-        Self::from(val)?;
-        Ok(val)
-    }
-}
+use std::convert::TryFrom;
 
 pub enum Quality {
     ThreeDimensional,
-    P(u32),
+    P(i32),
 }
 
-impl NumberedEnum for Quality {
-    fn from(val: u32) -> Result<Self, AppError> {
+impl TryFrom<i32> for Quality {
+    type Error = AppError;
+
+    fn try_from(val: i32) -> Result<Self, AppError> {
         match val {
             3 => Ok(Self::ThreeDimensional),
             720 | 1080 | 2160 => Ok(Self::P(val)),
@@ -29,8 +23,10 @@ pub enum VideoSource {
     BluRay,
 }
 
-impl NumberedEnum for VideoSource {
-    fn from(val: u32) -> Result<Self, AppError> {
+impl TryFrom<i32> for VideoSource {
+    type Error = AppError;
+
+    fn try_from(val: i32) -> Result<Self, AppError> {
         match val {
             1 => Ok(Self::WebRip),
             2 => Ok(Self::BluRay),
@@ -63,8 +59,10 @@ pub enum Genre {
     Western,
 }
 
-impl NumberedEnum for Genre {
-    fn from(val: u32) -> Result<Self, AppError> {
+impl TryFrom<i32> for Genre {
+    type Error = AppError;
+
+    fn try_from(val: i32) -> Result<Self, AppError> {
         match val {
             1 => Ok(Self::Action),
             2 => Ok(Self::Adventure),
@@ -90,4 +88,9 @@ impl NumberedEnum for Genre {
             _ => Err(AppError::UnmappedInputError(val, "Genre")),
         }
     }
+}
+
+pub fn validate<T: TryFrom<i32>>(val: u32) -> Result<i32, T::Error> {
+    let i = val as i32;
+    T::try_from(i).map(|_| i)
 }

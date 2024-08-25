@@ -5,7 +5,7 @@ use tracing::*;
 
 use crate::{
     common::{connect_db, last_insert_rowid, HandlerResponse},
-    constants::{Genre, NumberedEnum, Quality},
+    constants::{validate, Genre, Quality},
     errors::AppError,
     models::*,
     schema::{downloads, movie_genres, movies},
@@ -56,7 +56,7 @@ fn add_movie(
     let movie_id: i32 = diesel::select(last_insert_rowid()).get_result::<i32>(db)?;
     for genre in &req.genres {
         let genre_association = NewMovieGenreAssociation {
-            genre: Genre::validate(*genre)? as i32,
+            genre: validate::<Genre>(*genre)?,
             movie_id,
         };
         diesel::insert_into(movie_genres::table)
@@ -65,7 +65,7 @@ fn add_movie(
     }
     for download in &req.downloads {
         let new_download = NewDownload {
-            quality: Quality::validate(download.quality)? as i32,
+            quality: validate::<Quality>(download.quality)?,
             size_bytes: download.size_bytes as i64,
             magnet_link: &download.magnet_link,
             seeder_count: download.seeder_count as i32,

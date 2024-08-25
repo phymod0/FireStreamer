@@ -6,7 +6,7 @@ pub enum AppError {
     EnvironmentVariableUndeclaredError(std::env::VarError),
     DatabaseConnectionError(diesel::prelude::ConnectionError),
     DatabaseError(diesel::result::Error),
-    UnmappedInputError(u32, &'static str),
+    UnmappedInputError(i32, &'static str),
     ResourceNotFoundError,
 }
 
@@ -37,13 +37,10 @@ impl From<AppError> for StatusCode {
             /* Runtime errors */
             AppError::EnvironmentVariableUndeclaredError(_)
             | AppError::DatabaseConnectionError(_)
-            | AppError::DatabaseError(_) =>
-                StatusCode::INTERNAL_SERVER_ERROR,
+            | AppError::DatabaseError(_) => StatusCode::INTERNAL_SERVER_ERROR,
             /* User errors */
-            AppError::UnmappedInputError(_, _) =>
-                StatusCode::BAD_REQUEST,
-            AppError::ResourceNotFoundError =>
-                StatusCode::NOT_FOUND,
+            AppError::UnmappedInputError(_, _) => StatusCode::BAD_REQUEST,
+            AppError::ResourceNotFoundError => StatusCode::NOT_FOUND,
         }
     }
 }
