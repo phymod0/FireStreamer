@@ -26,7 +26,7 @@ class MoviesTest(BaseTest):
         self.assertEqual(123, response_json["runtime_minutes"])
         self.assertEqual("https://optional.field.com/cover_image.jpg", response_json["cover_image_url"])
         self.assertEqual([], response_json["genres"])
-        self.assertFalse("downloads" in response_json)
+        self.assertEqual([], response_json["downloads"])
 
     def test_create_and_get_single_movie_full(self):
         response = self.do_post("/movie", {

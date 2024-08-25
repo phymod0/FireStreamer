@@ -7,6 +7,7 @@ use crate::{
     common::{connect_db, HandlerResponse},
     errors::AppError,
     models::*,
+    schema::downloads::dsl as downloads,
     schema::movie_genres::dsl as genres,
     schema::movies::dsl as movies,
 };
@@ -37,10 +38,21 @@ fn get_genres_for_movie_id(db: &mut SqliteConnection, id: i32) -> Result<Vec<i32
         .collect())
 }
 
+fn get_downloads_for_movie_id(
+    db: &mut SqliteConnection,
+    id: i32,
+) -> Result<Vec<Download>, AppError> {
+    Ok(downloads::downloads
+        .filter(downloads::movie_id.eq(id))
+        .select(Download::as_select())
+        .load(db)?)
+}
+
 fn get_movie_json(id: i32) -> Result<AxumJson, AppError> {
     let db = &mut connect_db()?;
     let mut movie_json = serde_json::to_value(get_movie_by_id(db, id)?).unwrap();
     movie_json["genres"] = json!(get_genres_for_movie_id(db, id)?);
+    movie_json["downloads"] = json!(get_downloads_for_movie_id(db, id)?);
     Ok(axum::Json(movie_json))
 }
 
