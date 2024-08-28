@@ -47,7 +47,7 @@ class _PrimaryPageState extends State<PrimaryPage> {
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(100),
+          padding: const EdgeInsets.only(left: 100, top: 70),
           child: Column(
             children: <Widget>[
               Align(

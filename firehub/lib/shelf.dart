@@ -15,7 +15,7 @@ class _ShelfState extends State<_Shelf> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 100,
+      height: 200,
       child: Align(
         alignment: Alignment.centerLeft,
         child: Padding(
@@ -30,11 +30,15 @@ class _ShelfState extends State<_Shelf> {
               } else if (snapshot.hasData) {
                 String display = "";
                 for (Movie movie in snapshot.data!) {
-                  display += ", " + movie.title;
+                  if (display == "") {
+                    display = movie.title;
+                  } else {
+                    display = "$display\n    ${movie.title}";
+                  }
                 }
-                return Text("Got data: ${display}");
+                return Text("Got data:\n    $display");
               } else {
-                return Text("NO DATA");
+                return const Text("NO DATA");
               }
             },
           ),
