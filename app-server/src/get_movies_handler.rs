@@ -1,23 +1,21 @@
+use axum::{http::StatusCode, Json};
 use diesel::prelude::*;
 use tracing::*;
-use axum::{
-    Json,
-    http::StatusCode,
-};
 
 use crate::{
-    models::*,
+    common::{connect_db, HandlerResponse},
     errors::AppError,
+    models::*,
     schema::movies::dsl::*,
-    common::{
-        HandlerResponse,
-        connect_db,
-    },
 };
 
 fn get_movies() -> Result<Vec<Movie>, AppError> {
     let db = &mut connect_db()?;
-    Ok(movies.limit(50).select(Movie::as_select()).load(db)?)
+    Ok(movies
+        .order(year)
+        .limit(10)
+        .select(Movie::as_select())
+        .load(db)?)
 }
 
 pub async fn handler() -> HandlerResponse<Json<Vec<Movie>>> {
