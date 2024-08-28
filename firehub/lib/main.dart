@@ -16,7 +16,7 @@ class FireHubApp extends StatelessWidget {
       title: 'FireHub',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFFBF9F00),
+          seedColor: Colors.teal,
           brightness: Brightness.dark,
         ),
         useMaterial3: true,

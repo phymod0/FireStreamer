@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class _Shelf extends StatefulWidget {
-  final Future<String> shelfContents;
+  final Future<List<Movie>> shelfContents;
 
   const _Shelf({required this.shelfContents});
 
@@ -24,9 +26,15 @@ class _ShelfState extends State<_Shelf> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();
               } else if (snapshot.hasError) {
-                return const Text("Error!");
+                return Text("Error: ${snapshot.error}");
+              } else if (snapshot.hasData) {
+                String display = "";
+                for (Movie movie in snapshot.data!) {
+                  display += ", " + movie.title;
+                }
+                return Text("Got data: ${display}");
               } else {
-                return Text("Got data: ${snapshot.data}");
+                return Text("NO DATA");
               }
             },
           ),
@@ -34,6 +42,12 @@ class _ShelfState extends State<_Shelf> {
       ),
     );
   }
+}
+
+class Movie {
+  final String title;
+
+  Movie(jsonData) : title = jsonData["title"];
 }
 
 class NewMoviesShelf extends StatelessWidget {
@@ -44,8 +58,18 @@ class NewMoviesShelf extends StatelessWidget {
     return _Shelf(shelfContents: createShelfContents());
   }
 
-  Future<String> createShelfContents() async {
+  Future<List<Movie>> createShelfContents() async {
     await Future.delayed(const Duration(seconds: 1));
-    return "New movies shelf";
+    final response = await http.get(Uri.parse("http://localhost:3000/movies"));
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonList = jsonDecode(response.body);
+      final List<Movie> movies = [];
+      for (var movieJson in jsonList) {
+        movies.add(Movie(movieJson));
+      }
+      return movies;
+    } else {
+      throw Exception("Movie query failed");
+    }
   }
 }
