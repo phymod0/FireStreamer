@@ -1,4 +1,4 @@
-package com.phymod0.firehub.firehub
+package com.example.firehub
 
 import io.flutter.embedding.android.FlutterActivity
 
